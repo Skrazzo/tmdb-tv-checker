@@ -1,7 +1,8 @@
 {
 	"tasks": {
 		"dev": "deno run --allow-env --allow-read --allow-ffi main.ts",
-		"compile": "deno compile --allow-env --allow-read --allow-ffi main.ts"
+		"compile": "deno compile --allow-env --allow-read --allow-ffi main.ts",
+		"fmt": "deno fmt --watch --use-tabs --line-width=80 --indent-width=4"
 	},
 	"imports": {
 		"@db/sqlite": "jsr:@db/sqlite@^0.12.0",

@@ -6,3 +6,8 @@ export interface Error {
 export interface Success {
 	success: true;
 }
+
+export interface TestRow {
+	id: number;
+	num: number;
+}
