@@ -14,7 +14,9 @@
     "jsr:@std/path@0.217": "0.217.0",
     "jsr:@std/path@0.221": "0.221.0",
     "npm:moment@*": "2.30.1",
-    "npm:moment@^2.30.1": "2.30.1"
+    "npm:moment@^2.30.1": "2.30.1",
+    "npm:tmdb-ts@*": "2.0.1",
+    "npm:tmdb-ts@^2.0.1": "2.0.1"
   },
   "jsr": {
     "@db/sqlite@0.12.0": {
@@ -75,15 +77,47 @@
     }
   },
   "npm": {
+    "cross-fetch@4.0.0": {
+      "integrity": "sha512-e4a5N8lVvuLgAWgnCrLr2PP0YyDOTHa9H/Rj54dirp61qXnNq46m82bRhNqIA5VccJtWBvPTFRV3TtvHUKPB1g==",
+      "dependencies": [
+        "node-fetch"
+      ]
+    },
     "moment@2.30.1": {
       "integrity": "sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how=="
+    },
+    "node-fetch@2.7.0": {
+      "integrity": "sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==",
+      "dependencies": [
+        "whatwg-url"
+      ]
+    },
+    "tmdb-ts@2.0.1": {
+      "integrity": "sha512-T3OnICnxOARYPrRoTuuPpmaoQ1mUL5AgWz3N5RT1WjLmlNA4h0H+j2yho3KTp4tm8V6sfwJRbzQaSCwGIzxuRQ==",
+      "dependencies": [
+        "cross-fetch"
+      ]
+    },
+    "tr46@0.0.3": {
+      "integrity": "sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw=="
+    },
+    "webidl-conversions@3.0.1": {
+      "integrity": "sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ=="
+    },
+    "whatwg-url@5.0.0": {
+      "integrity": "sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==",
+      "dependencies": [
+        "tr46",
+        "webidl-conversions"
+      ]
     }
   },
   "workspace": {
     "dependencies": [
       "jsr:@db/sqlite@0.12",
       "jsr:@std/assert@1",
-      "npm:moment@^2.30.1"
+      "npm:moment@^2.30.1",
+      "npm:tmdb-ts@^2.0.1"
     ]
   }
 }

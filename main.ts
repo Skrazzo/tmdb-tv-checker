@@ -1,12 +1,21 @@
-import { TestDatabase } from "./database/db.ts";
+import { TMDB } from "npm:tmdb-ts";
 
-const tdb = new TestDatabase();
-
-for (let i = 0; i < 10; i++) {
-	const res = tdb.create(i);
-	if (res.success) {
-		console.log("Created");
-	} else {
-		console.error("Error:", res.error);
-	}
+if (!Deno.env.has("TMDB")) {
+	console.error(
+		'Please add your tmdb api key in .env file as "TMDB" or add --env-file tag if it\'s not present',
+	);
+	Deno.exit(1);
 }
+
+const tmdb_api: string | undefined = Deno.env.get("TMDB");
+if (!tmdb_api) {
+	console.error("Please add your tmdb api key cannot be empty");
+	Deno.exit(1);
+}
+
+const tmdb = new TMDB(tmdb_api);
+
+(async () => {
+	let search = await tmdb.search.tvShows({ query: "Ozark" });
+	console.log(search);
+})();
