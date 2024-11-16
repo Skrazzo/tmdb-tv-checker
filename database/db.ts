@@ -1,5 +1,4 @@
 import { Database } from "jsr:@db/sqlite";
-import { Error, Success } from "../types/db.ts";
 
 const db = new Database("./database/db.db");
 
