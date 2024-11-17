@@ -1,4 +1,3 @@
-export function prepareTmdbQuery(folderName:string):string {
-
-    return '';
+export function prepareTmdbQuery(folderName: string): string {
+	return "";
 }
