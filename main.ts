@@ -1,4 +1,4 @@
-import { loadConfig } from "./functions/loadConfig.ts";
+import { loadConfig } from "./utils/loadConfig.ts";
 
 // Load config file
 const config = loadConfig();
