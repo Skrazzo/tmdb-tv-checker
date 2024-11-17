@@ -1,6 +1,7 @@
 import { readJsonSync, writeJsonSync } from "https://deno.land/x/jsonfile/mod.ts";
 import { configName } from "../variables/var.ts";
-import { Config, displayError } from "../types/dataHandling.ts";
+import { Config } from "../types/index.ts";
+import { displayError } from "./errors.ts";
 
 function isValidConfig(config: unknown): config is Record<string, string> {
 	if (typeof config !== "object") return false;
