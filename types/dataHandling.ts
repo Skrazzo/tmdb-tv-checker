@@ -12,6 +12,6 @@ export interface Error {
 }
 
 export interface Config {
-	tmdb_key: string;
-	show_folder: string;
+	tmdb_key: string | null;
+	show_folder: string | null;
 }
