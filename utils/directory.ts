@@ -7,3 +7,4 @@ export function isDirectory(path: string):boolean {
 		return false;
 	}
 }
+

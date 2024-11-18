@@ -26,3 +26,8 @@ Deno.test("Renaming folders so that they're compatible with tmdb query", () => {
 	assertEquals(prepareTmdbQuery("No.Spe2024cial.Characters").query, "no special characters"); // Normal input with dots
 	assertEquals(prepareTmdbQuery("No.Spe2024cial.Characters").year, 2024); // Normal input with dots
 });
+
+
+Deno.test("Extracting season number from folder name", () => {
+
+});

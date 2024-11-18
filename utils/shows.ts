@@ -24,3 +24,10 @@ export function prepareTmdbQuery(folderName: string): SearchQuery  {
 	
 	return {query: name, year: year};
 }
+
+// Return season number by giving folder name
+export function getSeason(name: string): number {
+
+
+	return 1;
+}
