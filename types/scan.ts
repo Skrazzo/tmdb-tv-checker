@@ -6,15 +6,11 @@ export interface EpisodeScan {
 export interface SeasonScan {
 	season: number;
 	path: string;
-	episodes: {
-		[key: string]: EpisodeScan;
-	};
+	episodes: EpisodeScan[];
 }
 
 export interface ShowScan {
 	name: string;
 	path: string;
-	seasons: {
-		[key: string]: SeasonScan;
-	};
+	seasons: SeasonScan[];
 }

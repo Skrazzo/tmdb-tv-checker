@@ -1,4 +1,5 @@
 import { SearchQuery } from "../types/index.ts";
+import { ShowScan } from "../types/scan.ts";
 
 export function prepareTmdbQuery(folderName: string): SearchQuery {
 	let name: string = folderName;
@@ -44,18 +45,17 @@ export function getSeason(name: string): number | null {
 
 export function getEpisode(name: string): number | null {
 	let episode: number;
-	let matches:string[] | null ;
-	if (name.toLowerCase().includes('ep') && name.toLowerCase().includes('se')) {
-		matches=name.match(/(?<=ep)\d{1,2}/gmi);
-	}else {
-		matches=name.match(/(?<=e)\d{1,2}/gmi);
-
+	let matches: string[] | null;
+	if (name.toLowerCase().includes("ep") && name.toLowerCase().includes("se")) {
+		matches = name.match(/(?<=ep)\d{1,2}/gmi);
+	} else {
+		matches = name.match(/(?<=e)\d{1,2}/gmi);
 	}
 
-	if(!matches || matches.length === 0) {
+	if (!matches || matches.length === 0) {
 		// Check if theres weird episode count like 01x01
 		matches = name.match(/\dx\d/gmi);
-		if(!matches || matches.length === 0) {
+		if (!matches || matches.length === 0) {
 			return null;
 		}
 	}
@@ -67,4 +67,10 @@ export function getEpisode(name: string): number | null {
 	}
 
 	return episode;
+}
+
+export function scanShows(): ShowScan[] {
+	let rtn: ShowScan[] = [];
+
+	return rtn;
 }

@@ -55,53 +55,50 @@ Deno.test("Season number extraction", async (t) => {
 	});
 });
 
-
-
-
 Deno.test("Episode number extraction", async (t) => {
 	await t.step("extracts episode numbers from standard format", () => {
-	  assertEquals(getEpisode("Silo.S02E01.720p.HEVC.x265-MeGusta[EZTVx.to].mkv"), 1);
-	  assertEquals(getEpisode("Show.S01E23.1080p.WEB.x264.mkv"), 23);
-	  assertEquals(getEpisode("Series.S05E09.HDR.2160p.WEB.H265.mkv"), 9);
+		assertEquals(getEpisode("Silo.S02E01.720p.HEVC.x265-MeGusta[EZTVx.to].mkv"), 1);
+		assertEquals(getEpisode("Show.S01E23.1080p.WEB.x264.mkv"), 23);
+		assertEquals(getEpisode("Series.S05E09.HDR.2160p.WEB.H265.mkv"), 9);
 	});
-  
+
 	await t.step("handles different separators and formats", () => {
-	  assertEquals(getEpisode("Show.S01xE01.mkv"), 1);
-	  assertEquals(getEpisode("Show.1x01.mkv"), 1);
-	  assertEquals(getEpisode("Show.S01.E01.mkv"), 1);
-	  assertEquals(getEpisode("Show_S01E01_1080p.mkv"), 1);
+		assertEquals(getEpisode("Show.S01xE01.mkv"), 1);
+		assertEquals(getEpisode("Show.1x01.mkv"), 1);
+		assertEquals(getEpisode("Show.S01.E01.mkv"), 1);
+		assertEquals(getEpisode("Show_S01E01_1080p.mkv"), 1);
 	});
-  
+
 	await t.step("handles missing or invalid formats", () => {
-	  assertEquals(getEpisode("Show.mkv"), null);
-	  assertEquals(getEpisode("Show.S01.mkv"), null);
-	  assertEquals(getEpisode("Show.E01.mkv"), 1);
-	  assertEquals(getEpisode("Show.S01EXX.mkv"), null);
+		assertEquals(getEpisode("Show.mkv"), null);
+		assertEquals(getEpisode("Show.S01.mkv"), null);
+		assertEquals(getEpisode("Show.E01.mkv"), 1);
+		assertEquals(getEpisode("Show.S01EXX.mkv"), null);
 	});
-  
+
 	await t.step("handles special cases", () => {
-	  assertEquals(getEpisode("Show.S01E00.Pilot.mkv"), 0);
-	  assertEquals(getEpisode("show.s01e01.mkv"), 1);
-	  assertEquals(getEpisode("SHOW.S01E01.MKV"), 1);
+		assertEquals(getEpisode("Show.S01E00.Pilot.mkv"), 0);
+		assertEquals(getEpisode("show.s01e01.mkv"), 1);
+		assertEquals(getEpisode("SHOW.S01E01.MKV"), 1);
 	});
-  
+
 	await t.step("handles double-digit episodes", () => {
-	  assertEquals(getEpisode("Show.S01E10.mkv"), 10);
-	  assertEquals(getEpisode("Show.S02E15.mkv"), 15);
-	  assertEquals(getEpisode("Show.S03E99.mkv"), 99);
+		assertEquals(getEpisode("Show.S01E10.mkv"), 10);
+		assertEquals(getEpisode("Show.S02E15.mkv"), 15);
+		assertEquals(getEpisode("Show.S03E99.mkv"), 99);
 	});
-  
+
 	await t.step("handles various file names and formats", () => {
-	  assertEquals(getEpisode("The.Walking.Dead.S03E07.720p.mkv"), 7);
-	  assertEquals(getEpisode("Breaking.Bad.S05E16.Felina.1080p.mkv"), 16);
-	  assertEquals(getEpisode("Friends.S02E05.The.One.with.Five.Steaks.mkv"), 5);
-	  assertEquals(getEpisode("Game.of.Thrones.S08E03.The.Long.Night.mkv"), 3);
+		assertEquals(getEpisode("The.Walking.Dead.S03E07.720p.mkv"), 7);
+		assertEquals(getEpisode("Breaking.Bad.S05E16.Felina.1080p.mkv"), 16);
+		assertEquals(getEpisode("Friends.S02E05.The.One.with.Five.Steaks.mkv"), 5);
+		assertEquals(getEpisode("Game.of.Thrones.S08E03.The.Long.Night.mkv"), 3);
 	});
-  
+
 	await t.step("handles atypical formats", () => {
-	  assertEquals(getEpisode("Show-S01E01-HDTV.mkv"), 1);
-	  assertEquals(getEpisode("Show.SE01EP02.mkv"), 2);
-	  assertEquals(getEpisode("Show-Season01Episode02.mkv"), null);
-	  assertEquals(getEpisode("Show.S1E1.mkv"), 1);
+		assertEquals(getEpisode("Show-S01E01-HDTV.mkv"), 1);
+		assertEquals(getEpisode("Show.SE01EP02.mkv"), 2);
+		assertEquals(getEpisode("Show-Season01Episode02.mkv"), null);
+		assertEquals(getEpisode("Show.S1E1.mkv"), 1);
 	});
-  });
+});
