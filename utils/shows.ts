@@ -28,7 +28,7 @@ export function prepareTmdbQuery(folderName: string): SearchQuery {
 // Return season number by giving folder name
 export function getSeason(name: string): number | null {
 	let season: number;
-	const matches = name.match(/\d+/gm);
+	const matches: string[] | null = name.match(/\d+/gm);
 
 	if (!matches || matches.length === 0) {
 		return null;
@@ -44,10 +44,20 @@ export function getSeason(name: string): number | null {
 
 export function getEpisode(name: string): number | null {
 	let episode: number;
-	const matches = name.match(/(?<=e)\d{1,2}/gmi);
+	let matches:string[] | null ;
+	if (name.toLowerCase().includes('ep') && name.toLowerCase().includes('se')) {
+		matches=name.match(/(?<=ep)\d{1,2}/gmi);
+	}else {
+		matches=name.match(/(?<=e)\d{1,2}/gmi);
+
+	}
 
 	if(!matches || matches.length === 0) {
-		return null;
+		// Check if theres weird episode count like 01x01
+		matches = name.match(/\dx\d/gmi);
+		if(!matches || matches.length === 0) {
+			return null;
+		}
 	}
 
 	try {
