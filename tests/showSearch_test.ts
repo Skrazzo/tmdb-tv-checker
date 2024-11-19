@@ -1,11 +1,10 @@
 import { assertEquals } from "jsr:@std/assert";
-
-import { prepareTmdbQuery } from "../utils/shows.ts";
+import { getEpisode, getSeason, prepareTmdbQuery } from "../utils/shows.ts";
 
 Deno.test("Renaming folders so that they're compatible with tmdb query", () => {
 	assertEquals(prepareTmdbQuery("Rick and morty (2013)").query, "rick and morty");
 	assertEquals(prepareTmdbQuery("Rick and morty (2013)").year, 2013);
-	assertEquals(prepareTmdbQuery("R()))ick a(nd )morty ()").query, 'rick and morty');
+	assertEquals(prepareTmdbQuery("R()))ick a(nd )morty ()").query, "rick and morty");
 	assertEquals(prepareTmdbQuery("Rick and morty ()").year, undefined);
 	assertEquals(prepareTmdbQuery("Rick and morty").query, "rick and morty");
 	assertEquals(prepareTmdbQuery("Rick-and-morty").query, "rick and morty");
@@ -17,17 +16,72 @@ Deno.test("Renaming folders so that they're compatible with tmdb query", () => {
 	assertEquals(prepareTmdbQuery("rick+and+morty").query, "rick and morty"); // "+" separator
 	assertEquals(prepareTmdbQuery("rick@and#morty!").query, "rick and morty"); // Random special characters
 	assertEquals(prepareTmdbQuery("Rick-and-Morty--2013").query, "rick and morty"); // Multiple dashes and year
-	assertEquals(prepareTmdbQuery("Rick-and-Morty--2013").year, 2013); 
+	assertEquals(prepareTmdbQuery("Rick-and-Morty--2013").year, 2013);
 	assertEquals(prepareTmdbQuery("(Rick and Morty)").query, "rick and morty"); // Parentheses without year
 	assertEquals(prepareTmdbQuery("(Rick and Morty)").year, undefined); // Parentheses without year
 	assertEquals(prepareTmdbQuery("Breaking.Bad").query, "breaking bad"); // Different show format
+	assertEquals(prepareTmdbQuery("Breaking.Bad.---2024").query, "breaking bad");
+	assertEquals(prepareTmdbQuery("Breaking---.Bad.-2024").year, 2024);
 	assertEquals(prepareTmdbQuery("The Witcher 2019").query, "the witcher");
 	assertEquals(prepareTmdbQuery("The Witcher 2019").year, 2019);
 	assertEquals(prepareTmdbQuery("No.Spe2024cial.Characters").query, "no special characters"); // Normal input with dots
 	assertEquals(prepareTmdbQuery("No.Spe2024cial.Characters").year, 2024); // Normal input with dots
 });
 
+Deno.test("Season number extraction", async (t) => {
+	await t.step("extracts basic season numbers", () => {
+		assertEquals(getSeason("S01"), 1);
+		assertEquals(getSeason("S1"), 1);
+		assertEquals(getSeason("S10"), 10);
+	});
 
-Deno.test("Extracting season number from folder name", () => {
+	await t.step("handles different formats", () => {
+		assertEquals(getSeason("Season 01"), 1);
+		assertEquals(getSeason("SEASON01"), 1);
+		assertEquals(getSeason("season1"), 1);
+	});
 
+	await t.step("handles edge cases", () => {
+		assertEquals(getSeason("S00"), 0);
+		assertEquals(getSeason("S99"), 99);
+		assertEquals(getSeason(" S01 "), 1);
+	});
+
+	await t.step("throws error for invalid inputs", () => {
+		assertEquals(getSeason(""), null);
+		assertEquals(getSeason("S"), null);
+		assertEquals(getSeason("01"), 1);
+		assertEquals(getSeason("SA1"), 1);
+	});
+});
+
+
+
+
+Deno.test("Episode number extraction", async (t) => {
+  await t.step("extracts episode numbers from standard format", () => {
+    assertEquals(getEpisode("Silo.S02E01.720p.HEVC.x265-MeGusta[EZTVx.to].mkv"), 1);
+    assertEquals(getEpisode("Show.S01E23.1080p.WEB.x264.mkv"), 23);
+    assertEquals(getEpisode("Series.S05E09.HDR.2160p.WEB.H265.mkv"), 9);
+  });
+
+  await t.step("handles different separators and formats", () => {
+    assertEquals(getEpisode("Show.S01xE01.mkv"), 1);
+    assertEquals(getEpisode("Show.1x01.mkv"), 1); // TODO: Finish this
+    assertEquals(getEpisode("Show.S01.E01.mkv"), 1);
+    assertEquals(getEpisode("Show_S01E01_1080p.mkv"), 1);
+  });
+
+  await t.step("handles missing or invalid formats", () => {
+    assertEquals(getEpisode("Show.mkv"), null);
+    assertEquals(getEpisode("Show.S01.mkv"), null);
+    assertEquals(getEpisode("Show.E01.mkv"), 1);
+    assertEquals(getEpisode("Show.S01EXX.mkv"), null);
+  });
+
+  await t.step("handles special cases", () => {
+    assertEquals(getEpisode("Show.S01E00.Pilot.mkv"), 0);
+    assertEquals(getEpisode("show.s01e01.mkv"), 1);
+    assertEquals(getEpisode("SHOW.S01E01.MKV"), 1);
+  });
 });
