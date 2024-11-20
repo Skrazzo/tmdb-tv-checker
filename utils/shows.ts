@@ -1,5 +1,7 @@
-import { SearchQuery } from "../types/index.ts";
+import { NotFoundError, SearchQuery } from "../types/index.ts";
 import { ShowScan } from "../types/scan.ts";
+import { Path } from "jsr:@david/path";
+import { getDirs } from "./directory.ts";
 
 export function prepareTmdbQuery(folderName: string): SearchQuery {
 	let name: string = folderName;
@@ -69,8 +71,28 @@ export function getEpisode(name: string): number | null {
 	return episode;
 }
 
-export function scanShows(): ShowScan[] {
+export function scanShows(path: string): ShowScan[] {
 	let rtn: ShowScan[] = [];
+	const notFoundProps = (dir: string) => ({
+		cause: "NotFound in scanShows",
+		message: "Could not find this directory" + dir,
+	});
+
+	const showRoot = new Path(path);
+	if (!showRoot.existsSync()) {
+		throw new NotFoundError(notFoundProps(showRoot.toString()));
+	}
+
+	const shows = getDirs(showRoot.toString());
+	if (!shows) throw new NotFoundError(notFoundProps(showRoot.toString()));
+
+	rtn = shows.map((show) => {
+		const showPath = showRoot.join(show);
+		return {
+			path: showPath,
+			seasons: [],
+		};
+	});
 
 	return rtn;
 }

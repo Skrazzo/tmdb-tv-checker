@@ -1,16 +1,17 @@
+import { Path } from "jsr:@david/path";
+
 export interface EpisodeScan {
 	episode: number;
-	path: string;
+	path: Path;
 }
 
 export interface SeasonScan {
 	season: number;
-	path: string;
+	path: Path;
 	episodes: EpisodeScan[];
 }
 
 export interface ShowScan {
-	name: string;
-	path: string;
+	path: Path;
 	seasons: SeasonScan[];
 }
