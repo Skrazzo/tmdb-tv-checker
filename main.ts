@@ -1,6 +1,7 @@
+import { Path } from "jsr:@david/path";
 import { NotFoundError, ShowScan } from "./types/index.ts";
 import { loadConfig } from "./utils/loadConfig.ts";
-import { scanShows } from "./utils/shows.ts";
+import { getShowApi } from "./utils/shows.ts";
 
 // Load config file
 const config = loadConfig();
@@ -14,9 +15,12 @@ try {
 		});
 	}
 
-	const api: ShowScan[] = scanShows(config.show_folder);
-	console.log("----");
-	console.log(api);
+	const showPath = new Path(config.show_folder);
+	const api: ShowScan[] = getShowApi(showPath);
+
+	for (const a of api) {
+		console.log(a);
+	}
 } catch (err) {
 	console.log(err);
 	Deno.exit(1);

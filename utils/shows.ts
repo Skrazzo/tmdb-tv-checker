@@ -1,7 +1,7 @@
 import { NotFoundError, SearchQuery } from "../types/index.ts";
-import { ShowScan } from "../types/scan.ts";
+import { EpisodeScan, SeasonScan, ShowScan } from "../types/scan.ts";
 import { Path } from "jsr:@david/path";
-import { getDirs } from "./directory.ts";
+import { getDirs, getVideoFiles } from "./directory.ts";
 
 export function prepareTmdbQuery(folderName: string): SearchQuery {
 	let name: string = folderName;
@@ -71,28 +71,81 @@ export function getEpisode(name: string): number | null {
 	return episode;
 }
 
-export function scanShows(path: string): ShowScan[] {
+export function scanShows(showRoot: Path): ShowScan[] {
 	let rtn: ShowScan[] = [];
-	const notFoundProps = (dir: string) => ({
+	const notFoundProps = (dir: string): { cause: string; message: string } => ({
 		cause: "NotFound in scanShows",
 		message: "Could not find this directory" + dir,
 	});
 
-	const showRoot = new Path(path);
 	if (!showRoot.existsSync()) {
 		throw new NotFoundError(notFoundProps(showRoot.toString()));
 	}
 
-	const shows = getDirs(showRoot.toString());
+	const shows = getDirs(showRoot);
 	if (!shows) throw new NotFoundError(notFoundProps(showRoot.toString()));
 
 	rtn = shows.map((show) => {
-		const showPath = showRoot.join(show);
 		return {
-			path: showPath,
+			path: show,
 			seasons: [],
 		};
 	});
 
 	return rtn;
+}
+
+export function scanSeasons(show: ShowScan): SeasonScan[] {
+	const rtn: SeasonScan[] = [];
+	const seasons: Path[] | null = getDirs(show.path);
+
+	if (!seasons) return [];
+
+	for (const se of seasons) {
+		const seNumber: number | null = getSeason(se.basename());
+		if (!seNumber) continue;
+
+		rtn.push({
+			path: se,
+			season: seNumber,
+			episodes: [],
+		});
+	}
+
+	return rtn;
+}
+
+export function scanEpisodes(season: SeasonScan): EpisodeScan[] {
+	const rtn: EpisodeScan[] = [];
+
+	const episodes: Path[] | null = getVideoFiles(season.path);
+	if (!episodes) return [];
+
+	for (const ep of episodes) {
+		const epNumber: number | null = getEpisode(ep.basename());
+		if (!epNumber) continue;
+
+		rtn.push({
+			episode: epNumber,
+			path: ep,
+		});
+	}
+
+	return rtn;
+}
+
+export function getShowApi(showFolder: Path): ShowScan[] {
+	const api: ShowScan[] = scanShows(showFolder);
+
+	// Scan each show for seasons
+	for (const show of api) {
+		show.seasons = scanSeasons(show);
+
+		// Go through every season and scan for shows
+		for (const season of show.seasons) {
+			season.episodes = scanEpisodes(season);
+		}
+	}
+
+	return api;
 }
