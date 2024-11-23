@@ -86,7 +86,11 @@ export function scanShows(showRoot: Path): ShowScan[] {
 	if (!shows) throw new NotFoundError(notFoundProps(showRoot.toString()));
 
 	rtn = shows.map((show) => {
+		const sq: SearchQuery = prepareTmdbQuery(show.basename());
+
 		return {
+			name: sq.query,
+			year: sq.year,
 			path: show,
 			seasons: [],
 		};

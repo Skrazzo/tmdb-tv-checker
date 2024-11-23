@@ -54,7 +54,7 @@ export function loadConfig(): Config | null {
 		const config: Config = {
 			tmdb_key: "api key from your tmdb account",
 			show_folder: "path-to-shows",
-			database: "path-to-database"
+			database: "path-to-database",
 		};
 
 		try {
@@ -62,14 +62,14 @@ export function loadConfig(): Config | null {
 		} catch (err) {
 			displayError({
 				when: "Writing config file",
-				message: err
+				message: err,
 			});
 		}
 
 		// Display error
 		displayError({
 			when: "loading config file",
-			message: "Config file has been created, please fill up needed variables"
+			message: "Config file has been created, please fill up needed variables",
 		});
 		return null;
 	}

@@ -12,6 +12,8 @@ export interface SeasonScan {
 }
 
 export interface ShowScan {
+	name: string;
+	year: number | undefined;
 	path: Path;
 	seasons: SeasonScan[];
 }

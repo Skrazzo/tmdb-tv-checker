@@ -1,32 +1,17 @@
-import { Database } from "jsr:@db/sqlite";
+// Database
+import { Kysely } from "npm:kysely";
+import { DB as Sqlite } from "https://deno.land/x/sqlite/mod.ts";
+import { DenoSqliteDialect } from "jsr:@soapbox/kysely-deno-sqlite";
+import { Database } from "../types/index.ts";
 
-const db = new Database("./database/db.db");
+export function initiate(database: string): Kysely<Database> {
+	const db: Kysely<Database> = new Kysely({
+		dialect: new DenoSqliteDialect({
+			database: new Sqlite(database),
+		}),
+	});
 
-/*
+	return db;
+}
 
-===== Future tables =====
-
----- Shows ----
-id
-tmdb_id
-title
-description
-seasons
-status
-trailer
-rating
-tmdb_link
-downloaded
-last_checked
-
-
----- Episodes ----
-id
-show_id
-season
-episode
-title
-description
-rating
-
-*/
+export default { initiate };
