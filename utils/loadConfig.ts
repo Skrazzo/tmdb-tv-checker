@@ -31,28 +31,30 @@ export function loadConfig(): Config | null {
 		const tmp = readJsonSync(configName) as Record<string, string>;
 
 		if (tmp === null) {
-			displayError({ when: "After parsing config file", message: "Config file is non-existent", exit: true });
+			displayError({ when: "After parsing config file", message: "Config file is non-existent" });
 			return null;
 		}
 
 		if (!isValidConfig(tmp)) {
-			displayError({ when: "Validating config file", message: "Config file is not correct", exit: true });
+			displayError({ when: "Validating config file", message: "Config file is not correct" });
 		}
 
 		const config: Config = {
 			tmdb_key: tmp.tmdb_key || null,
 			show_folder: tmp.show_folder || null,
+			database: tmp.database || null,
 		};
 		return config;
 	} catch (err) {
 		if (!(err instanceof Deno.errors.NotFound)) {
-			displayError({ when: "Trying to open config file", message: `Unexpected error -> ${err}`, exit: true });
+			displayError({ when: "Trying to open config file", message: `Unexpected error -> ${err}` });
 		}
 
 		// Create config file, because it does not exist
 		const config: Config = {
 			tmdb_key: "api key from your tmdb account",
 			show_folder: "path-to-shows",
+			database: "path-to-database"
 		};
 
 		try {
@@ -60,16 +62,14 @@ export function loadConfig(): Config | null {
 		} catch (err) {
 			displayError({
 				when: "Writing config file",
-				message: err,
-				exit: true,
+				message: err
 			});
 		}
 
 		// Display error
 		displayError({
 			when: "loading config file",
-			message: "Config file has been created, please fill up needed variables",
-			exit: true,
+			message: "Config file has been created, please fill up needed variables"
 		});
 		return null;
 	}
