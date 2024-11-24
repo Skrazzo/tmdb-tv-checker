@@ -1,7 +1,7 @@
 import { TMDB } from "npm:tmdb-ts";
 import { loadConfig } from "../utils/loadConfig.ts";
-import { assertEquals, assertNotEquals } from "jsr:@std/assert";
-import { Path } from "jsr:@david/path";
+import { assertEquals, AssertionError, assertNotEquals } from "jsr:@std/assert";
+import { testDirectory, testFile } from "./utils/files.ts";
 
 Deno.test("Query show name, and getting response", async () => {
 	const config = loadConfig();
@@ -18,13 +18,13 @@ Deno.test("Query show name, and getting response", async () => {
 	}
 });
 
-Deno.test("Testing if show directory exists", () => {
+Deno.test("Testing if directories exists", async (t) => {
 	const config = loadConfig();
 
-	if (config !== null && config.show_folder !== null) {
-		const showPath = new Path(config.show_folder);
-		assertEquals(showPath.existsSync(), true);
-	} else {
-		assertEquals("Could not load config or show_folder path is empty", "");
+	if (!config) {
+		throw new AssertionError("Could not load the config file");
 	}
+
+	await testDirectory(t, "show_folder", config.show_folder);
+	await testFile(t, "database", config.database);
 });

@@ -1,4 +1,5 @@
 export const configName: string = "config.json";
+export const momentFormat: string = "YYYY-MM-DD HH:mm:ss";
 export const videoExtensions: string[] = [
 	".mp4",
 	".mov",

@@ -1,11 +1,11 @@
-import { assertEquals, fail } from "@std/assert";
+import { assertEquals, AssertionError } from "@std/assert";
 import { Path } from "jsr:@david/path";
 import { loadConfig } from "../utils/loadConfig.ts";
 
 Deno.test("Testing David path library", () => {
 	const config = loadConfig();
 	if (!config || !config.show_folder) {
-		fail("Config file is not correct");
+		throw new AssertionError("Config file is not correct");
 	}
 
 	const showPath = new Path(config.show_folder);
