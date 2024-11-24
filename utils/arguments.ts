@@ -13,6 +13,12 @@ export async function checkArguments() {
 
 	const dbPath = new Path(config.database);
 
+	// TODO: Create a better way to make command line commands
+
+	// TODO: Add ability to request show
+	// TODO: Add ability to delete certain show from database
+	// TODO: Add ability to list all shows, and see updates with a command
+
 	if (args.includes("--migrate")) {
 		// Do database table migrations
 		try {

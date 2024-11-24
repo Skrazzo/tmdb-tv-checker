@@ -6,15 +6,14 @@ export async function up(db: Kysely<Database>): Promise<void> {
 		.addColumn("id", "integer", (col) => col.primaryKey())
 		.addColumn("tmdb_id", "integer", (col) => col.notNull())
 		.addColumn("path", "text")
+		.addColumn("title", "text")
 		.addColumn("status", "text")
 		.addColumn("banner", "text")
 		.addColumn("poster", "text")
-		.addColumn("trailer", "text")
 		.addColumn("requested", "boolean", (col) => col.defaultTo(false).notNull())
 		.addColumn("user_score", "integer")
 		.addColumn("year", "integer")
 		.addColumn("overview", "text")
-		.addColumn("release_date", "text")
 		.addColumn("last_checked", "text", (col) => col.notNull())
 		.execute();
 

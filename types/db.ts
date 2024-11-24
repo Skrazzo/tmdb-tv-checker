@@ -9,16 +9,14 @@ export interface ShowTable {
 	id: Generated<number>;
 	tmdb_id: number;
 	path: string | null;
-	title: string | null;
-	status: "Ended" | "Returning Series" | "In Production" | "Canceled" | "Pilot" | "Planned" | null;
+	title: string;
+	status: string | null;
 	banner: string | null;
 	poster: string | null;
-	trailer: string | null;
 	requested: boolean;
-	user_score: number | null;
-	year: number | null;
+	user_score: number;
+	year: number;
 	overview: string | null;
-	release_date: string | null;
 	last_checked: string;
 }
 export type Show = Selectable<ShowTable>;
