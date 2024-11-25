@@ -1,5 +1,5 @@
-import { TvShowDetails } from "tmdb-ts";
-import { NewShow } from "../types/index.ts";
+import { Episode, TvShowDetails } from "tmdb-ts";
+import { NewEpisode, NewShow } from "../types/index.ts";
 import moment from "npm:moment";
 
 /**
@@ -21,6 +21,20 @@ export function formatShowDatabase(details: TvShowDetails): NewShow {
 		user_score: Math.round(details.vote_average * 10),
 		year: parseInt(moment(details.first_air_date).format("YYYY")),
 		overview: details.overview || null,
+		last_checked: moment().format(),
+	};
+}
+
+export function formatEpisodeDatabase(episode: Episode, show_id: bigint): NewEpisode {
+	return {
+		show_id: show_id,
+		season: episode.season_number,
+		episode: episode.episode_number,
+		title: episode.name,
+		overview: episode.overview,
+		release_date: episode.air_date,
+		length: episode.runtime,
+		user_score: Math.round(episode.vote_average * 10),
 		last_checked: moment().format(),
 	};
 }

@@ -26,9 +26,9 @@ export async function checkArguments() {
 			console.log("Starting database migration");
 			const db = DatabaseModule.initiate(dbPath.toString());
 			await migrate.up(db);
-			console.log('Finished database migration');
+			console.log("Finished database migration");
 		} catch (err) {
-			if(err instanceof SqliteError) {
+			if (err instanceof SqliteError) {
 				console.error(`If database already is migrated? Try --migrate-fresh\n${err}`);
 			} else {
 				console.error(err);

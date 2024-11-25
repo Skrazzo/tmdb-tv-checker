@@ -1,10 +1,10 @@
 import { Path } from "jsr:@david/path";
-import { NotFoundError, Report, SearchQuery, Show, ShowScan } from "./types/index.ts";
+import { NewEpisode, NoInsertResult, NotFoundError, Report, SearchQuery, Show, ShowScan } from "./types/index.ts";
 import { loadConfig } from "./utils/loadConfig.ts";
-import { getShowApi, prepareTmdbQuery } from "./utils/shows.ts";
+import { getEpisodePath, getShowApi, prepareTmdbQuery } from "./utils/shows.ts";
 import Database from "./database/db.ts";
 
-import { Search, TMDB, TV, TvShowDetails } from "npm:tmdb-ts";
+import { ErrorResponse, Search, SeasonDetails, TMDB, TV, TvShowDetails } from "npm:tmdb-ts";
 
 // Set default moment format
 import moment from "npm:moment";
@@ -13,9 +13,10 @@ moment.defaultFormat = momentFormat;
 
 // Check arguments for special commands (db migration, etc..)
 import { checkArguments } from "./utils/arguments.ts";
-import { formatShowDatabase } from "./utils/tmdb.ts";
+import { formatEpisodeDatabase, formatShowDatabase } from "./utils/tmdb.ts";
 import { NewShow } from "./types/db.ts";
 import { SqliteError } from "https://deno.land/x/sqlite@v3.9.1/mod.ts";
+import { InsertResult } from "kysely";
 await checkArguments();
 
 // Load config file
@@ -68,10 +69,10 @@ try {
 				.selectAll()
 				.where("path", "==", show.path.toString())
 				.executeTakeFirst();
-		}catch(err) {
-			if(err instanceof SqliteError) {
+		} catch (err) {
+			if (err instanceof SqliteError) {
 				console.error(`Have you migrated database with --migrate or --migrate-fresh? ${err}`);
-			}else {
+			} else {
 				console.error(`Unexpected error appeared ${err}`);
 			}
 			Deno.exit(1);
@@ -80,7 +81,7 @@ try {
 		if (showRow) {
 			// TODO: Later add, that cache is updated after certain period of time (defined in config)
 			report.skipped.push({ name: showRow.title });
-			continue;
+			continue; 
 		}
 
 		// Find tmdb show based on a show folder name
@@ -101,8 +102,40 @@ try {
 		newShow.path = show.path.toString();
 
 		// Add show to the database, and update report
-		db.insertInto("shows").values(newShow).execute();
+		showRow = await db.insertInto("shows").values(newShow).executeTakeFirst();
 		report.added.push({ name: newShow.title, poster: newShow.poster || null });
+
+		if (showRow.insertId === undefined) {
+			throw new NoInsertResult({
+				cause: "Could not retrieve insertId from row insert",
+				message:
+					`Adding show "${newShow.title}" into the database, and could not retrieve insertId, something went wrong`,
+			});
+		}
+
+		// Add show episodes and seasons
+		let seasonNumber = 1;
+		while (true) {
+			let season: SeasonDetails | null = null;
+
+			// Tries to fetch season, if reaches season that does not exist, breaks the loop, and goes to the next show
+			try {
+				season = await tmdb.tvSeasons.details({ tvShowID: newShow.tmdb_id, seasonNumber: seasonNumber });
+			} catch (_err) {
+				break;
+			}
+			if (!season) break;
+			seasonNumber++;
+
+			// Extracts information
+			for (const episode of season.episodes) {
+				const epInfo: NewEpisode = formatEpisodeDatabase(episode, showRow.insertId);
+				const epPath: Path | null = getEpisodePath({se: episode.season_number, ep: episode.episode_number, showFileSystem: show});
+			
+				if(epPath) epInfo.path = epPath.toString();
+				db.insertInto('episodes').values(epInfo).execute();
+			}
+		}
 	}
 
 	console.log(report);

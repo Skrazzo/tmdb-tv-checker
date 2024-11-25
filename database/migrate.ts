@@ -19,7 +19,7 @@ export async function up(db: Kysely<Database>): Promise<void> {
 		.execute();
 	console.timeEnd("shows");
 
-	console.time("episodes")
+	console.time("episodes");
 	await db.schema.createTable("episodes")
 		.addColumn("id", "integer", (col) => col.primaryKey())
 		.addColumn("show_id", "integer", (col) => col.notNull())
@@ -33,7 +33,7 @@ export async function up(db: Kysely<Database>): Promise<void> {
 		.addColumn("user_score", "integer")
 		.addColumn("last_checked", "text", (col) => col.notNull())
 		.execute();
-	console.timeEnd("episodes")
+	console.timeEnd("episodes");
 }
 
 export async function down(db: Kysely<Database>): Promise<void> {

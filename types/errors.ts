@@ -17,3 +17,13 @@ export class NotFoundError extends Error {
 		this.message = message;
 	}
 }
+
+export class NoInsertResult extends Error {
+	constructor({ cause, message }: ErrorClassProps) {
+		super();
+
+		this.name = "Undefined";
+		if (cause) this.cause = cause;
+		this.message = message;
+	}
+}
