@@ -81,7 +81,7 @@ try {
 		if (showRow) {
 			// TODO: Later add, that cache is updated after certain period of time (defined in config)
 			report.skipped.push({ name: showRow.title });
-			continue; 
+			continue;
 		}
 
 		// Find tmdb show based on a show folder name
@@ -130,10 +130,14 @@ try {
 			// Extracts information
 			for (const episode of season.episodes) {
 				const epInfo: NewEpisode = formatEpisodeDatabase(episode, showRow.insertId);
-				const epPath: Path | null = getEpisodePath({se: episode.season_number, ep: episode.episode_number, showFileSystem: show});
-			
-				if(epPath) epInfo.path = epPath.toString();
-				db.insertInto('episodes').values(epInfo).execute();
+				const epPath: Path | null = getEpisodePath({
+					se: episode.season_number,
+					ep: episode.episode_number,
+					showFileSystem: show,
+				});
+
+				if (epPath) epInfo.path = epPath.toString();
+				db.insertInto("episodes").values(epInfo).execute();
 			}
 		}
 	}

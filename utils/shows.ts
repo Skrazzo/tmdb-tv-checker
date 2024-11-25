@@ -154,11 +154,13 @@ export function getShowApi(showFolder: Path): ShowScan[] {
 	return api;
 }
 
-export function getEpisodePath({se, ep, showFileSystem}: {se: number; ep: number; showFileSystem: ShowScan;}): Path | null {
+export function getEpisodePath(
+	{ se, ep, showFileSystem }: { se: number; ep: number; showFileSystem: ShowScan },
+): Path | null {
 	const show = showFileSystem;
-	if(show.seasons.length < se) return null; // Season does not exist
-	
+	if (show.seasons.length < se) return null; // Season does not exist
+
 	const episodes: EpisodeScan[] = show.seasons[se - 1].episodes;
-	if(episodes.length < ep) return null; // Episode does not exist
+	if (episodes.length < ep) return null; // Episode does not exist
 	return episodes[ep - 1].path;
 }
