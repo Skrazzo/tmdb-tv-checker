@@ -2,6 +2,7 @@ import migrate from "../database/migrate.ts";
 import DatabaseModule from "../database/db.ts";
 import { loadConfig } from "./loadConfig.ts";
 import { Path } from "jsr:@david/path";
+import { SqliteError } from "https://deno.land/x/sqlite@v3.9.1/mod.ts";
 
 // Checks for special arguments to execute commands
 export async function checkArguments() {
@@ -22,10 +23,16 @@ export async function checkArguments() {
 	if (args.includes("--migrate")) {
 		// Do database table migrations
 		try {
+			console.log("Starting database migration");
 			const db = DatabaseModule.initiate(dbPath.toString());
 			await migrate.up(db);
+			console.log('Finished database migration');
 		} catch (err) {
-			console.error(err);
+			if(err instanceof SqliteError) {
+				console.error(`If database already is migrated? Try --migrate-fresh\n${err}`);
+			} else {
+				console.error(err);
+			}
 		} finally {
 			Deno.exit();
 		}
@@ -53,7 +60,7 @@ export async function checkArguments() {
 				const db = DatabaseModule.initiate(dbPath.toString());
 				await migrate.up(db);
 
-				console.log("Refreshed database");
+				console.log("Migrated database");
 			} else {
 				console.log("Canceled");
 			}

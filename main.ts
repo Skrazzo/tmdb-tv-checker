@@ -1,5 +1,5 @@
 import { Path } from "jsr:@david/path";
-import { NotFoundError, Report, SearchQuery, ShowScan } from "./types/index.ts";
+import { NotFoundError, Report, SearchQuery, Show, ShowScan } from "./types/index.ts";
 import { loadConfig } from "./utils/loadConfig.ts";
 import { getShowApi, prepareTmdbQuery } from "./utils/shows.ts";
 import Database from "./database/db.ts";
@@ -15,7 +15,8 @@ moment.defaultFormat = momentFormat;
 import { checkArguments } from "./utils/arguments.ts";
 import { formatShowDatabase } from "./utils/tmdb.ts";
 import { NewShow } from "./types/db.ts";
-checkArguments();
+import { SqliteError } from "https://deno.land/x/sqlite@v3.9.1/mod.ts";
+await checkArguments();
 
 // Load config file
 const config = loadConfig();
@@ -61,10 +62,20 @@ try {
 
 	for (const show of shows) {
 		// Check if theres aleady cached info in database
-		const showRow = await db.selectFrom("shows")
-			.selectAll()
-			.where("path", "==", show.path.toString())
-			.executeTakeFirst();
+		let showRow;
+		try {
+			showRow = await db.selectFrom("shows")
+				.selectAll()
+				.where("path", "==", show.path.toString())
+				.executeTakeFirst();
+		}catch(err) {
+			if(err instanceof SqliteError) {
+				console.error(`Have you migrated database with --migrate or --migrate-fresh? ${err}`);
+			}else {
+				console.error(`Unexpected error appeared ${err}`);
+			}
+			Deno.exit(1);
+		}
 
 		if (showRow) {
 			// TODO: Later add, that cache is updated after certain period of time (defined in config)

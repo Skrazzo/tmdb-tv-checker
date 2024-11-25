@@ -2,6 +2,7 @@ import { Kysely } from "npm:kysely";
 import { Database } from "../types/index.ts";
 
 export async function up(db: Kysely<Database>): Promise<void> {
+	console.time("shows");
 	await db.schema.createTable("shows")
 		.addColumn("id", "integer", (col) => col.primaryKey())
 		.addColumn("tmdb_id", "integer", (col) => col.notNull())
@@ -16,7 +17,9 @@ export async function up(db: Kysely<Database>): Promise<void> {
 		.addColumn("overview", "text")
 		.addColumn("last_checked", "text", (col) => col.notNull())
 		.execute();
+	console.timeEnd("shows");
 
+	console.time("episodes")
 	await db.schema.createTable("episodes")
 		.addColumn("id", "integer", (col) => col.primaryKey())
 		.addColumn("show_id", "integer", (col) => col.notNull())
@@ -30,6 +33,7 @@ export async function up(db: Kysely<Database>): Promise<void> {
 		.addColumn("user_score", "integer")
 		.addColumn("last_checked", "text", (col) => col.notNull())
 		.execute();
+	console.timeEnd("episodes")
 }
 
 export async function down(db: Kysely<Database>): Promise<void> {
