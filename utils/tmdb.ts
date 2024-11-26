@@ -1,10 +1,11 @@
 import { Episode, Search, SeasonDetails, TMDB, TV, TvShowDetails } from "tmdb-ts";
-import { CreateReport, Database, NewEpisode, NewShow, NoInsertResult, SearchQuery, ShowScan } from "../types/index.ts";
+import { CreateReport, Database, NewEpisode, NewShow, NoInsertResult, SearchQuery, ShowScan, UpdateReport } from "../types/index.ts";
 import moment from "npm:moment";
 import { SqliteError } from "https://deno.land/x/sqlite@v3.9.1/src/error.ts";
 import { Kysely } from "kysely";
 import { getEpisodePath, prepareTmdbQuery } from "./shows.ts";
 import { Path } from "@david/path";
+import { loadConfig } from "./loadConfig.ts";
 
 /**
  * Takes TvShowDetails object from tmdb api, and extracts only needed information for database
@@ -29,7 +30,7 @@ export function formatShowDatabase(details: TvShowDetails): NewShow {
 	};
 }
 
-export function formatEpisodeDatabase(episode: Episode, show_id: bigint): NewEpisode {
+export function formatEpisodeDatabase(episode: Episode, show_id: number | bigint): NewEpisode {
 	return {
 		show_id: show_id,
 		season: episode.season_number,
@@ -43,7 +44,7 @@ export function formatEpisodeDatabase(episode: Episode, show_id: bigint): NewEpi
 	};
 }
 
-export async function createTMDBCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Database>): Promise<CreateReport> {
+export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Database>): Promise<CreateReport> {
 	// Create report object, which later will be used to report to user
 	const report: CreateReport = {
 		added: [],
@@ -69,7 +70,6 @@ export async function createTMDBCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<
 		}
 
 		if (showRow) {
-			// TODO: Later add, that cache is updated after certain period of time (defined in config)
 			report.skipped.push({ name: showRow.title });
 			continue;
 		}
@@ -130,6 +130,80 @@ export async function createTMDBCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<
 				db.insertInto("episodes").values(epInfo).execute();
 			}
 		}
+	}
+
+	return report;
+}
+
+export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<UpdateReport>{
+	const config = loadConfig();
+	const report: UpdateReport = {
+		skipped: [],
+		updated: [],
+	}
+
+	const showDB = await db.selectFrom('shows').selectAll().execute();
+	
+	// Update all shows that havent ended,
+	// and they havent been checked in less than specified time in config
+	for(const showRow of showDB) {
+		// Skip shows that not need to be checked
+		if(showRow.status === 'Ended') {
+			report.skipped.push({name: showRow.title});
+			continue;
+		}
+
+		let diff: number = moment(showRow.last_checked).diff(moment(), 'hours', true);
+		// Convert to positive hours
+		if(diff < 0){
+			diff = diff * -1
+		}
+
+		if(diff < config.update_freq) {
+			report.skipped.push({name: showRow.title});
+			continue;
+		}
+		
+		let seasonNumber: number = 1;
+		while(true) {
+			let details: SeasonDetails;
+			
+			try {
+				details=  await tmdb.tvSeasons.details({tvShowID: showRow.tmdb_id ,seasonNumber: seasonNumber});
+			} catch (_err) {
+				break;
+			}
+
+			for(const ep of details.episodes) {
+				const epInfo: NewEpisode = formatEpisodeDatabase(ep, showRow.tmdb_id);
+				await db.updateTable('episodes').set({
+					title: epInfo.title,
+					overview: epInfo.overview,
+					release_date: epInfo.release_date,
+					length: epInfo.length,
+					last_checked: moment().format()
+				})
+					.where('show_id', '=', showRow.id)
+					.where('season','=', epInfo.season)
+					.where('episode','=', epInfo.episode)
+					.execute();
+
+				
+			}
+
+			seasonNumber++;
+		}
+		
+		
+		await db.updateTable('shows')
+			.set({last_checked: moment().format()})
+			.where('id', '=', showRow.id)
+			.execute();
+		
+		report.updated.push({
+			name: showRow.title,
+			poster: showRow.poster			
+		});
 	}
 
 	return report;

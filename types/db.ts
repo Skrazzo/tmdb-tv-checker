@@ -25,7 +25,7 @@ export type UpdateShow = Updateable<ShowTable>;
 
 export interface EpisodeTable {
 	id: Generated<number>;
-	show_id: bigint;
+	show_id: number | bigint;
 	season: number;
 	episode: number;
 	path: string | null;

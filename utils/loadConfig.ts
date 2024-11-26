@@ -17,7 +17,7 @@ export function loadConfig(): Config {
 		}
 
 		// Check all values to exist
-		checkValue(tmp.updateFreq, "updateFreq");
+		checkValue(tmp.update_freq, "update_freq");
 		checkValue(tmp.tmdb_key, "tmdb_key");
 		checkValue(tmp.show_folder, "show_folder");
 		checkValue(tmp.database, "database");
@@ -26,7 +26,7 @@ export function loadConfig(): Config {
 			tmdb_key: tmp.tmdb_key,
 			show_folder: tmp.show_folder,
 			database: tmp.database,
-			updateFreq: parseInt(tmp.updateFreq),
+			update_freq: parseFloat(tmp.update_freq),
 		};
 		return config;
 	} catch (err) {
@@ -41,7 +41,7 @@ export function loadConfig(): Config {
 			tmdb_key: "api key from your tmdb account",
 			show_folder: "path-to-shows",
 			database: "path-to-database",
-			updateFreq: 24,
+			update_freq: 24,
 		};
 
 		try {

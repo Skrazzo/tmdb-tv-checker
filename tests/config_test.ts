@@ -35,10 +35,10 @@ Deno.test("Testing if updateFreq is correct", () => {
 		throw new AssertionError("Could not load a config file");
 	}
 
-	if (!config.updateFreq) {
-		throw new AssertionError("updateFreq does not exist or is empty in the config");
+	if (!config.update_freq) {
+		throw new AssertionError("update_freq does not exist or is empty in the config");
 	}
 
-	const hoursFreq = parseInt(config.updateFreq.toString());
+	const hoursFreq = parseInt(config.update_freq.toString());
 	assertEquals(typeof hoursFreq, "number");
 });
