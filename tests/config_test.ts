@@ -28,3 +28,17 @@ Deno.test("Testing if directories exists", async (t) => {
 	await testDirectory(t, "show_folder", config.show_folder);
 	await testFile(t, "database", config.database);
 });
+
+Deno.test("Testing if updateFreq is correct", () => {
+	const config = loadConfig();
+	if (!config) {
+		throw new AssertionError("Could not load a config file");
+	}
+
+	if (!config.updateFreq) {
+		throw new AssertionError("updateFreq does not exist or is empty in the config");
+	}
+
+	const hoursFreq = parseInt(config.updateFreq.toString());
+	assertEquals(typeof hoursFreq, "number");
+});

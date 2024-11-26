@@ -27,3 +27,12 @@ export class NoInsertResult extends Error {
 		this.message = message;
 	}
 }
+
+export class NoConfigValue extends Error {
+	constructor(name: string) {
+		super();
+
+		this.name = "Invalid config";
+		this.cause = `Value ${name} not found present or empty in the config file`;
+	}
+}

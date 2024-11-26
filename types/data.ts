@@ -1,7 +1,8 @@
 export interface Config {
-	tmdb_key: string | null;
-	show_folder: string | null;
-	database: string | null;
+	tmdb_key: string;
+	show_folder: string;
+	database: string;
+	updateFreq: number;
 }
 
 interface Show {
@@ -13,9 +14,9 @@ interface PosterShow extends Show {
 }
 
 export interface Report {
-	updated: PosterShow[];
+	skipped: Show[];
+}
+export interface CreateReport extends Report {
 	added: PosterShow[];
 	notFound: Show[];
-	deleted: PosterShow[];
-	skipped: Show[];
 }
