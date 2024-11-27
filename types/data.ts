@@ -13,16 +13,3 @@ interface PosterShow extends Show {
 	poster: string | null;
 }
 
-// ========= Reports ===========
-
-export interface Report {
-	skipped: Show[];
-}
-export interface CreateReport extends Report {
-	added: PosterShow[];
-	notFound: Show[];
-}
-
-export interface UpdateReport extends Report {
-	updated: PosterShow[];
-}

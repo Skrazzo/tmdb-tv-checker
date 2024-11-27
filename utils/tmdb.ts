@@ -1,5 +1,5 @@
 import { Episode, Search, SeasonDetails, TMDB, TV, TvShowDetails } from "tmdb-ts";
-import { CreateReport, Database, NewEpisode, NewShow, NoInsertResult, SearchQuery, ShowScan, UpdateReport } from "../types/index.ts";
+import { Database, NewEpisode, NewShow, NoInsertResult, SearchQuery, ShowScan } from "../types/index.ts";
 import moment from "npm:moment";
 import { SqliteError } from "https://deno.land/x/sqlite@v3.9.1/src/error.ts";
 import { Kysely } from "kysely";
@@ -44,13 +44,7 @@ export function formatEpisodeDatabase(episode: Episode, show_id: number | bigint
 	};
 }
 
-export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Database>): Promise<CreateReport> {
-	// Create report object, which later will be used to report to user
-	const report: CreateReport = {
-		added: [],
-		skipped: [],
-		notFound: [],
-	};
+export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Database>): Promise<void> {
 
 	for (const show of shows) {
 		// Check if theres aleady cached info in database
@@ -69,20 +63,16 @@ export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Data
 			Deno.exit(1);
 		}
 
-		if (showRow) {
-			report.skipped.push({ name: showRow.title });
-			continue;
-		}
+		// Skip if cache already exists
+		if (showRow) continue;
 
 		// Find tmdb show based on a show folder name
 		// Prepare tmdb query search
 		const sq: SearchQuery = prepareTmdbQuery(show.path.basename());
 		const search: Search<TV> = await tmdb.search.tvShows(sq);
 
-		if (search.total_results === 0) {
-			report.notFound.push({ name: sq.query });
-			continue;
-		}
+		// Skip if couldn't find
+		if (search.total_results === 0) continue;
 
 		// Take first search result, and query details for it
 		const details: TvShowDetails = await tmdb.tvShows.details(search.results[0].id);
@@ -93,7 +83,7 @@ export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Data
 
 		// Add show to the database, and update report
 		showRow = await db.insertInto("shows").values(newShow).executeTakeFirst();
-		report.added.push({ name: newShow.title, poster: newShow.poster || null });
+		
 
 		if (showRow.insertId === undefined) {
 			throw new NoInsertResult({
@@ -131,16 +121,10 @@ export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Data
 			}
 		}
 	}
-
-	return report;
 }
 
-export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<UpdateReport>{
+export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<void>{
 	const config = loadConfig();
-	const report: UpdateReport = {
-		skipped: [],
-		updated: [],
-	}
 
 	const showDB = await db.selectFrom('shows').selectAll().execute();
 	
@@ -148,22 +132,19 @@ export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<Upd
 	// and they havent been checked in less than specified time in config
 	for(const showRow of showDB) {
 		// Skip shows that not need to be checked
-		if(showRow.status === 'Ended') {
-			report.skipped.push({name: showRow.title});
-			continue;
-		}
+		if(showRow.status === 'Ended') continue;
 
+		// If update difference is too small, then skip the update
 		let diff: number = moment(showRow.last_checked).diff(moment(), 'hours', true);
 		// Convert to positive hours
 		if(diff < 0){
 			diff = diff * -1
 		}
 
-		if(diff < config.update_freq) {
-			report.skipped.push({name: showRow.title});
-			continue;
-		}
-		
+		if(diff < config.update_freq) continue;
+
+		// Update database information
+
 		let seasonNumber: number = 1;
 		while(true) {
 			let details: SeasonDetails;
@@ -186,9 +167,7 @@ export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<Upd
 					.where('show_id', '=', showRow.id)
 					.where('season','=', epInfo.season)
 					.where('episode','=', epInfo.episode)
-					.execute();
-
-				
+					.execute();				
 			}
 
 			seasonNumber++;
@@ -200,11 +179,13 @@ export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<Upd
 			.where('id', '=', showRow.id)
 			.execute();
 		
-		report.updated.push({
-			name: showRow.title,
-			poster: showRow.poster			
-		});
+		
 	}
 
-	return report;
+	
+}
+
+
+export async function cleanCache(db: Kysely<Database>): Promise<void> {
+	// TODO: Implement this shit
 }

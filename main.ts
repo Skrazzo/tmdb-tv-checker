@@ -13,7 +13,7 @@ moment.defaultFormat = momentFormat;
 
 // Check arguments for special commands (db migration, etc..)
 import { checkArguments } from "./utils/arguments.ts";
-import { createCache, updateCache } from "./utils/tmdb.ts";
+import { cleanCache, createCache, updateCache } from "./utils/tmdb.ts";
 await checkArguments();
 
 // Load config file
@@ -31,13 +31,12 @@ const showPath = new Path(config.show_folder);
 const shows: ShowScan[] = getShowApi(showPath);
 
 // Clean up database
-// TODO: Delete from cache database, where path does not exist anymore
-
+await cleanCache(db);
 // Update database information
-const updateReport = await updateCache(tmdb, db);
+await updateCache(tmdb, db);
 // Create cache for new files
-const createReport = await createCache(shows, tmdb, db);
+await createCache(shows, tmdb, db);
 
-console.log(`Updated report: ${updateReport}`);
-console.log(`Created report: ${createReport}`);
+// TODO: Do report
+
 
