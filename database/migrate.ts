@@ -11,7 +11,6 @@ export async function up(db: Kysely<Database>): Promise<void> {
 		.addColumn("status", "text")
 		.addColumn("banner", "text")
 		.addColumn("poster", "text")
-		.addColumn("requested", "boolean", (col) => col.defaultTo(false).notNull())
 		.addColumn("user_score", "integer")
 		.addColumn("year", "integer")
 		.addColumn("overview", "text")

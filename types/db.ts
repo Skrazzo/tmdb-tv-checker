@@ -13,7 +13,6 @@ export interface ShowTable {
 	status: string | null;
 	banner: string | null;
 	poster: string | null;
-	requested: boolean;
 	user_score: number;
 	year: number;
 	overview: string | null;

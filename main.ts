@@ -38,5 +38,3 @@ await updateCache(tmdb, db);
 await createCache(shows, tmdb, db);
 
 // TODO: Do report
-
-

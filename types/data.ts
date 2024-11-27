@@ -12,4 +12,3 @@ interface Show {
 interface PosterShow extends Show {
 	poster: string | null;
 }
-

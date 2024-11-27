@@ -22,7 +22,6 @@ export function formatShowDatabase(details: TvShowDetails): NewShow {
 		title: details.name,
 		banner: details.backdrop_path || null,
 		poster: details.poster_path || null,
-		requested: false,
 		user_score: Math.round(details.vote_average * 10),
 		year: parseInt(moment(details.first_air_date).format("YYYY")),
 		overview: details.overview || null,
@@ -45,7 +44,6 @@ export function formatEpisodeDatabase(episode: Episode, show_id: number | bigint
 }
 
 export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Database>): Promise<void> {
-
 	for (const show of shows) {
 		// Check if theres aleady cached info in database
 		let showRow;
@@ -83,7 +81,6 @@ export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Data
 
 		// Add show to the database, and update report
 		showRow = await db.insertInto("shows").values(newShow).executeTakeFirst();
-		
 
 		if (showRow.insertId === undefined) {
 			throw new NoInsertResult({
@@ -123,68 +120,62 @@ export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Data
 	}
 }
 
-export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<void>{
+export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<void> {
 	const config = loadConfig();
 
-	const showDB = await db.selectFrom('shows').selectAll().execute();
-	
+	const showDB = await db.selectFrom("shows").selectAll().execute();
+
 	// Update all shows that havent ended,
 	// and they havent been checked in less than specified time in config
-	for(const showRow of showDB) {
+	for (const showRow of showDB) {
 		// Skip shows that not need to be checked
-		if(showRow.status === 'Ended') continue;
+		if (showRow.status === "Ended") continue;
 
 		// If update difference is too small, then skip the update
-		let diff: number = moment(showRow.last_checked).diff(moment(), 'hours', true);
+		let diff: number = moment(showRow.last_checked).diff(moment(), "hours", true);
 		// Convert to positive hours
-		if(diff < 0){
-			diff = diff * -1
+		if (diff < 0) {
+			diff = diff * -1;
 		}
 
-		if(diff < config.update_freq) continue;
+		if (diff < config.update_freq) continue;
 
 		// Update database information
 
 		let seasonNumber: number = 1;
-		while(true) {
+		while (true) {
 			let details: SeasonDetails;
-			
+
 			try {
-				details=  await tmdb.tvSeasons.details({tvShowID: showRow.tmdb_id ,seasonNumber: seasonNumber});
+				details = await tmdb.tvSeasons.details({ tvShowID: showRow.tmdb_id, seasonNumber: seasonNumber });
 			} catch (_err) {
 				break;
 			}
 
-			for(const ep of details.episodes) {
+			for (const ep of details.episodes) {
 				const epInfo: NewEpisode = formatEpisodeDatabase(ep, showRow.tmdb_id);
-				await db.updateTable('episodes').set({
+				await db.updateTable("episodes").set({
 					title: epInfo.title,
 					overview: epInfo.overview,
 					release_date: epInfo.release_date,
 					length: epInfo.length,
-					last_checked: moment().format()
+					last_checked: moment().format(),
 				})
-					.where('show_id', '=', showRow.id)
-					.where('season','=', epInfo.season)
-					.where('episode','=', epInfo.episode)
-					.execute();				
+					.where("show_id", "=", showRow.id)
+					.where("season", "=", epInfo.season)
+					.where("episode", "=", epInfo.episode)
+					.execute();
 			}
 
 			seasonNumber++;
 		}
-		
-		
-		await db.updateTable('shows')
-			.set({last_checked: moment().format()})
-			.where('id', '=', showRow.id)
+
+		await db.updateTable("shows")
+			.set({ last_checked: moment().format() })
+			.where("id", "=", showRow.id)
 			.execute();
-		
-		
 	}
-
-	
 }
-
 
 export async function cleanCache(db: Kysely<Database>): Promise<void> {
 	// TODO: Implement this shit
