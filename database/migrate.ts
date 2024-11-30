@@ -6,7 +6,7 @@ export async function up(db: Kysely<Database>): Promise<void> {
 	await db.schema.createTable("shows")
 		.addColumn("id", "integer", (col) => col.primaryKey())
 		.addColumn("tmdb_id", "integer", (col) => col.notNull())
-		.addColumn("path", "text")
+		.addColumn("path", "text", (col) => col.notNull())
 		.addColumn("title", "text")
 		.addColumn("status", "text")
 		.addColumn("banner", "text")

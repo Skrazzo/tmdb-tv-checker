@@ -1,5 +1,5 @@
 import { Path } from "jsr:@david/path";
-import { ShowScan } from "./types/index.ts";
+import { Report, ShowScan } from "./types/index.ts";
 import { loadConfig } from "./utils/loadConfig.ts";
 import { getShowApi } from "./utils/shows.ts";
 import database from "./database/db.ts";
@@ -30,11 +30,12 @@ const tmdb = new TMDB(config.tmdb_key);
 const showPath = new Path(config.show_folder);
 const shows: ShowScan[] = getShowApi(showPath);
 
-// Clean up database
-await cleanCache(db);
-// Update database information
-await updateCache(tmdb, db);
-// Create cache for new files
-await createCache(shows, tmdb, db);
+// Prepare report
+const report: Report = {
+    deleted: await cleanCache(db), // Clean up database
+    updated: await updateCache(tmdb, db), // Update database information
+    added: await createCache(shows, tmdb, db), // Create cache for new files
+    missing: []
+};
 
-// TODO: Do report
+console.log(report);

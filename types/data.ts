@@ -1,3 +1,5 @@
+import { numberlike } from "moment";
+
 export interface Config {
 	tmdb_key: string;
 	show_folder: string;
@@ -5,10 +7,23 @@ export interface Config {
 	update_freq: number;
 }
 
-interface Show {
-	name: string;
+interface ShowChanges {
+	shows: number;
+	episodes: number;
 }
 
-interface PosterShow extends Show {
-	poster: string | null;
+export interface Report {
+	deleted: number;
+	updated: ShowChanges;
+	added: ShowChanges;
+	missing: Show[];
 }
+
+
+interface Show {
+	name: string;
+	episode: number;
+	season: number;
+}
+
+

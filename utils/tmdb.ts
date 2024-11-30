@@ -1,8 +1,8 @@
 import { Episode, Search, SeasonDetails, TMDB, TV, TvShowDetails } from "tmdb-ts";
-import { Database, NewEpisode, NewShow, NoInsertResult, SearchQuery, ShowScan } from "../types/index.ts";
+import { Database, NewEpisode, NewShow, NoInsertResult, Report, SearchQuery, ShowScan } from "../types/index.ts";
 import moment from "npm:moment";
 import { SqliteError } from "https://deno.land/x/sqlite@v3.9.1/src/error.ts";
-import { Kysely } from "kysely";
+import { DeleteResult, Kysely } from "kysely";
 import { getEpisodePath, prepareTmdbQuery } from "./shows.ts";
 import { Path } from "@david/path";
 import { loadConfig } from "./loadConfig.ts";
@@ -43,7 +43,12 @@ export function formatEpisodeDatabase(episode: Episode, show_id: number | bigint
 	};
 }
 
-export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Database>): Promise<void> {
+export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Database>): Promise<Report['added']> {
+	const showsAdded: Report['added'] = {
+		shows: 0,
+		episodes: 0,
+	};
+	
 	for (const show of shows) {
 		// Check if theres aleady cached info in database
 		let showRow;
@@ -81,6 +86,7 @@ export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Data
 
 		// Add show to the database, and update report
 		showRow = await db.insertInto("shows").values(newShow).executeTakeFirst();
+		showsAdded.shows++;
 
 		if (showRow.insertId === undefined) {
 			throw new NoInsertResult({
@@ -115,15 +121,24 @@ export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Data
 
 				if (epPath) epInfo.path = epPath.toString();
 				db.insertInto("episodes").values(epInfo).execute();
+
+				// Update report
+				showsAdded.episodes++;
 			}
 		}
 	}
+
+	return showsAdded;
 }
 
-export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<void> {
+export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<Report['updated']> {
 	const config = loadConfig();
 
 	const showDB = await db.selectFrom("shows").selectAll().execute();
+	const updated: Report['updated'] = {
+		shows: 0,
+		episodes: 0
+	}
 
 	// Update all shows that havent ended,
 	// and they havent been checked in less than specified time in config
@@ -165,6 +180,8 @@ export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<voi
 					.where("season", "=", epInfo.season)
 					.where("episode", "=", epInfo.episode)
 					.execute();
+
+				updated.shows++; // Count in updated episodes
 			}
 
 			seasonNumber++;
@@ -174,9 +191,39 @@ export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<voi
 			.set({ last_checked: moment().format() })
 			.where("id", "=", showRow.id)
 			.execute();
+	
+		updated.shows++; // Count in shows updated
 	}
+
+	return updated;
 }
 
-export async function cleanCache(db: Kysely<Database>): Promise<void> {
-	// TODO: Implement this shit
+export async function cleanCache(db: Kysely<Database>): Promise<Report['deleted']> {
+	let deleted = 0;
+	let results: DeleteResult[];
+
+	// Go through all shows and check if paths exist
+	const shows = await db.selectFrom('shows').selectAll().execute();
+	for(const show of shows) {
+		if(show.path) { // Isn't null and path exists
+			const showPath = new Path(show.path);
+			if(showPath.existsSync()) continue;
+		} 
+
+		try {
+			// If show folder is moved or deleted, we need to remove it and its episodes from database 
+			results = await db.deleteFrom('shows').where('id', '=', show.id).execute();
+			deleted += results.length;
+
+			// After deleting show, we need to delete it 
+			results = await db.deleteFrom('episodes').where('show_id', '=', show.id).execute();
+			deleted += results.length;
+
+		} catch (err) {
+			console.error(`Error appeared while deleting unneeded cache for ${show.title}`);
+			console.error(err);
+		}
+	}
+
+	return deleted;
 }
