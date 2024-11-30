@@ -43,12 +43,12 @@ export function formatEpisodeDatabase(episode: Episode, show_id: number | bigint
 	};
 }
 
-export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Database>): Promise<Report['added']> {
-	const showsAdded: Report['added'] = {
+export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Database>): Promise<Report["added"]> {
+	const showsAdded: Report["added"] = {
 		shows: 0,
 		episodes: 0,
 	};
-	
+
 	for (const show of shows) {
 		// Check if theres aleady cached info in database
 		let showRow;
@@ -131,14 +131,14 @@ export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Data
 	return showsAdded;
 }
 
-export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<Report['updated']> {
+export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<Report["updated"]> {
 	const config = loadConfig();
 
 	const showDB = await db.selectFrom("shows").selectAll().execute();
-	const updated: Report['updated'] = {
+	const updated: Report["updated"] = {
 		shows: 0,
-		episodes: 0
-	}
+		episodes: 0,
+	};
 
 	// Update all shows that havent ended,
 	// and they havent been checked in less than specified time in config
@@ -191,34 +191,33 @@ export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<Rep
 			.set({ last_checked: moment().format() })
 			.where("id", "=", showRow.id)
 			.execute();
-	
+
 		updated.shows++; // Count in shows updated
 	}
 
 	return updated;
 }
 
-export async function cleanCache(db: Kysely<Database>): Promise<Report['deleted']> {
+export async function cleanCache(db: Kysely<Database>): Promise<Report["deleted"]> {
 	let deleted = 0;
 	let results: DeleteResult[];
 
 	// Go through all shows and check if paths exist
-	const shows = await db.selectFrom('shows').selectAll().execute();
-	for(const show of shows) {
-		if(show.path) { // Isn't null and path exists
+	const shows = await db.selectFrom("shows").selectAll().execute();
+	for (const show of shows) {
+		if (show.path) { // Isn't null and path exists
 			const showPath = new Path(show.path);
-			if(showPath.existsSync()) continue;
-		} 
+			if (showPath.existsSync()) continue;
+		}
 
 		try {
-			// If show folder is moved or deleted, we need to remove it and its episodes from database 
-			results = await db.deleteFrom('shows').where('id', '=', show.id).execute();
+			// If show folder is moved or deleted, we need to remove it and its episodes from database
+			results = await db.deleteFrom("shows").where("id", "=", show.id).execute();
 			deleted += results.length;
 
-			// After deleting show, we need to delete it 
-			results = await db.deleteFrom('episodes').where('show_id', '=', show.id).execute();
+			// After deleting show, we need to delete it
+			results = await db.deleteFrom("episodes").where("show_id", "=", show.id).execute();
 			deleted += results.length;
-
 		} catch (err) {
 			console.error(`Error appeared while deleting unneeded cache for ${show.title}`);
 			console.error(err);

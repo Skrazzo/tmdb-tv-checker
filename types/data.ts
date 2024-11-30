@@ -19,11 +19,8 @@ export interface Report {
 	missing: Show[];
 }
 
-
 interface Show {
 	name: string;
 	episode: number;
 	season: number;
 }
-
-

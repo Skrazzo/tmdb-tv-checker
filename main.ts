@@ -32,10 +32,10 @@ const shows: ShowScan[] = getShowApi(showPath);
 
 // Prepare report
 const report: Report = {
-    deleted: await cleanCache(db), // Clean up database
-    updated: await updateCache(tmdb, db), // Update database information
-    added: await createCache(shows, tmdb, db), // Create cache for new files
-    missing: []
+	deleted: await cleanCache(db), // Clean up database
+	updated: await updateCache(tmdb, db), // Update database information
+	added: await createCache(shows, tmdb, db), // Create cache for new files
+	missing: [],
 };
 
 console.log(report);
