@@ -1,11 +1,12 @@
 import { Episode, Search, SeasonDetails, TMDB, TV, TvShowDetails } from "tmdb-ts";
-import { Database, NewEpisode, NewShow, NoInsertResult, Report, SearchQuery, ShowScan } from "../types/index.ts";
+import { Database, MissingShow, NewEpisode, NewShow, NoInsertResult, Report, SearchQuery, ShowScan } from "../types/index.ts";
 import moment from "npm:moment";
 import { SqliteError } from "https://deno.land/x/sqlite@v3.9.1/src/error.ts";
 import { DeleteResult, Kysely } from "kysely";
 import { getEpisodePath, prepareTmdbQuery } from "./shows.ts";
 import { Path } from "@david/path";
 import { loadConfig } from "./loadConfig.ts";
+
 
 /**
  * Takes TvShowDetails object from tmdb api, and extracts only needed information for database
@@ -199,7 +200,10 @@ export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<Rep
 }
 
 export async function cleanCache(db: Kysely<Database>): Promise<Report["deleted"]> {
-	let deleted = 0;
+	let deleted: Report['deleted'] = {
+		shows: 0,
+		episodes: 0,
+	};
 	let results: DeleteResult[];
 
 	// Go through all shows and check if paths exist
@@ -213,11 +217,15 @@ export async function cleanCache(db: Kysely<Database>): Promise<Report["deleted"
 		try {
 			// If show folder is moved or deleted, we need to remove it and its episodes from database
 			results = await db.deleteFrom("shows").where("id", "=", show.id).execute();
-			deleted += results.length;
+			if(results.length > 0) {
+				deleted.shows += parseInt(results[0].numDeletedRows.toString());
+			}
 
 			// After deleting show, we need to delete it
 			results = await db.deleteFrom("episodes").where("show_id", "=", show.id).execute();
-			deleted += results.length;
+			if(results.length > 0) {
+				deleted.episodes += parseInt(results[0].numDeletedRows.toString());
+			}
 		} catch (err) {
 			console.error(`Error appeared while deleting unneeded cache for ${show.title}`);
 			console.error(err);
@@ -225,4 +233,51 @@ export async function cleanCache(db: Kysely<Database>): Promise<Report["deleted"
 	}
 
 	return deleted;
+}
+
+export async function findMissing(db: Kysely<Database>): Promise<Report['missing']> {
+	const missing: Report['missing'] = [];
+
+	const shows = await db.selectFrom('shows').selectAll().execute();
+	for(const show of shows) {
+		const missingShow: MissingShow = {
+			name: show.title,
+			episodes: []
+		}
+
+		const episodes = await db.selectFrom('episodes')
+			.selectAll()
+			.where('show_id', '=', show.id)
+			.execute();
+
+		// Loop through every episode
+		for(const ep of episodes){
+			// If episode path is null, or non existent, report as missing
+			if(ep.path) {
+				const epPath = new Path(ep.path);
+				if(epPath.existsSync()) {
+					continue;
+				}
+			}
+
+			if(!ep.release_date) continue; // Skip if episode doesnt have release date yet
+			
+			const diffHours = moment(ep.release_date).diff(moment(), 'hours');
+			if(diffHours > 0) continue; // Skip if episode hasn't come out yet
+
+			
+			missingShow.episodes.push({
+				name: ep.title || `No title`,
+				episode: ep.episode,
+				season: ep.season
+			});
+		};
+
+		// Check if any missing episodes found, if yes then add show as missing
+		if(missingShow.episodes.length !== 0) {
+			missing.push(missingShow);
+		}
+	}
+
+	return missing;
 }

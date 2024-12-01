@@ -1,5 +1,3 @@
-import { numberlike } from "moment";
-
 export interface Config {
 	tmdb_key: string;
 	show_folder: string;
@@ -13,13 +11,18 @@ interface ShowChanges {
 }
 
 export interface Report {
-	deleted: number;
+	deleted: ShowChanges;
 	updated: ShowChanges;
 	added: ShowChanges;
-	missing: Show[];
+	missing: MissingShow[];
 }
 
-interface Show {
+export interface MissingShow {
+	name: string;
+	episodes: MissingEpisode[];
+}
+
+export interface MissingEpisode {
 	name: string;
 	episode: number;
 	season: number;
