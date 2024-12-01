@@ -28,6 +28,7 @@ export interface Report {
 
 export interface MissingShow {
 	name: string;
+	poster: string;
 	episodes: MissingEpisode[];
 }
 

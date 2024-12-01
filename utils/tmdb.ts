@@ -250,6 +250,7 @@ export async function findMissing(db: Kysely<Database>): Promise<Report["missing
 	for (const show of shows) {
 		const missingShow: MissingShow = {
 			name: show.title,
+			poster: show.poster || "",
 			episodes: [],
 		};
 
