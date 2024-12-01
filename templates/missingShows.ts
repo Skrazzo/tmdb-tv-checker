@@ -1,3 +1,4 @@
+export const source = `
 <!DOCTYPE html>
 <html>
 	<head>
@@ -55,3 +56,5 @@
 		</div>
 	</body>
 </html>
+
+`;
