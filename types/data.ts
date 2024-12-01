@@ -3,6 +3,11 @@ export interface Config {
 	show_folder: string;
 	database: string;
 	update_freq: number;
+	email: { // TODO: Implement this into load config and check values
+		resend_api: string;
+		subject: string;
+		to: string;
+	}
 }
 
 interface ShowChanges {

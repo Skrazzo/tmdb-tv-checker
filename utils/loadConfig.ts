@@ -16,6 +16,8 @@ export function loadConfig(): Config {
 			throw new NotFoundError({ cause: "NotFound", message: "Config file does not exist, or is invalid" });
 		}
 
+		// TODO: Check email config
+
 		// Check all values to exist
 		checkValue(tmp.update_freq, "update_freq");
 		checkValue(tmp.tmdb_key, "tmdb_key");
