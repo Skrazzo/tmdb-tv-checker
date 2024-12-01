@@ -3,11 +3,15 @@ export interface Config {
 	show_folder: string;
 	database: string;
 	update_freq: number;
-	email: { // TODO: Implement this into load config and check values
-		resend_api: string;
+	email: {
+		resend_key: string;
 		subject: string;
-		to: string;
-	}
+		email: string;
+	};
+}
+
+export interface LoadConfig extends Omit<Config, "update_freq"> {
+	update_freq: string;
 }
 
 interface ShowChanges {
