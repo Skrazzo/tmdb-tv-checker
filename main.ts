@@ -47,7 +47,7 @@ if (report.missing.length > 0 && config.email.send_email) {
 	const html = generateHTML(report.missing);
 	await sendEmail(config.email, html);
 	console.log("Email sent to: " + config.email.email);
-} else {
+} else if (report.missing.length === 0){
 	console.log("No missing episodes found");
 }
 

@@ -64,7 +64,7 @@ export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Data
 		try {
 			showRow = await db.selectFrom("shows")
 				.selectAll()
-				.where("path", "==", show.path.toString())
+				.where("path", "=", show.path.toString())
 				.executeTakeFirst();
 		} catch (err) {
 			if (err instanceof SqliteError) {
@@ -135,6 +135,8 @@ export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Data
 				showsAdded.episodes++;
 			}
 		}
+
+		console.log(`Created ${newShow.title} TMDB: ${newShow.tmdb_id}`);
 	}
 
 	return showsAdded;
@@ -202,13 +204,14 @@ export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<Rep
 			.execute();
 
 		updated.shows++; // Count in shows updated
+		console.log(`Updated ${showRow.title} TMDB: ${showRow.tmdb_id}`);
 	}
 
 	return updated;
 }
 
 export async function cleanCache(db: Kysely<Database>): Promise<Report["deleted"]> {
-	let deleted: Report["deleted"] = {
+	const deleted: Report["deleted"] = {
 		shows: 0,
 		episodes: 0,
 	};

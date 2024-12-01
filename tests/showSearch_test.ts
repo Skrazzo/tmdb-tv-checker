@@ -60,6 +60,8 @@ Deno.test("Episode number extraction", async (t) => {
 		assertEquals(getEpisode("Silo.S02E01.720p.HEVC.x265-MeGusta[EZTVx.to].mkv"), 1);
 		assertEquals(getEpisode("Show.S01E23.1080p.WEB.x264.mkv"), 23);
 		assertEquals(getEpisode("Series.S05E09.HDR.2160p.WEB.H265.mkv"), 9);
+		assertEquals(getEpisode("The_EXPANSE_S02_E13_Calibans_War_(720p_AMZN_WebRip).mp4"), 13);
+		assertEquals(getEpisode('The_EXPANSE_S02_E09_The_Weeping_Somnambulist_(720p_AMZN_WebRip).mp4'), 9); // TODO: Fix this
 	});
 
 	await t.step("handles different separators and formats", () => {

@@ -2,8 +2,12 @@ import { configName } from "../variables/var.ts";
 import { Config, LoadConfig, NoConfigValue, NotFoundError } from "../types/index.ts";
 import { Path } from "@david/path";
 
-function checkValue(value: string, valueName: string): void {
-	if (!value || value === "") {
+function checkValue(value: string | number | boolean, valueName: string): void {
+	if(typeof value === 'undefined') throw new NoConfigValue(valueName);
+
+	// Convert to string and check if value is empty
+	const tmp: string = value.toString();
+	if (tmp === "") {
 		throw new NoConfigValue(valueName);
 	}
 }
@@ -51,7 +55,7 @@ export function loadConfig(): Config {
 	checkValue(tmp.email.email, "email.email");
 	checkValue(tmp.email.resend_key, "email.resend_key");
 	checkValue(tmp.email.subject, "email.subject");
-	checkValue(tmp.email.send_email.toString(), 'email.send_email');
+	checkValue(tmp.email.send_email, 'email.send_email');
 
 	const config: Config = {
 		...tmp,

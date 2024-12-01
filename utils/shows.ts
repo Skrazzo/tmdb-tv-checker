@@ -157,10 +157,15 @@ export function getShowApi(showFolder: Path): ShowScan[] {
 export function getEpisodePath(
 	{ se, ep, showFileSystem }: { se: number; ep: number; showFileSystem: ShowScan },
 ): Path | null {
-	const show = showFileSystem;
-	if (show.seasons.length < se) return null; // Season does not exist
+	const show: ShowScan = showFileSystem;
+	
+	const season: SeasonScan = show.seasons.filter(season => season.season === se)[0] || null
+	if(!season) return null; // couldnt find rigth season
 
-	const episodes: EpisodeScan[] = show.seasons[se - 1].episodes;
-	if (episodes.length < ep) return null; // Episode does not exist
-	return episodes[ep - 1].path;
+	// get episodes from the season
+	const episodes: EpisodeScan[] = season.episodes;
+	const episode = episodes.filter(episode => episode.episode === ep)[0] || null;
+
+	if(!episode) return null;
+	return episode.path;
 }
