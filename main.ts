@@ -14,6 +14,7 @@ moment.defaultFormat = momentFormat;
 // Check arguments for special commands (db migration, etc..)
 import { checkArguments } from "./utils/arguments.ts";
 import { cleanCache, createCache, findMissing, updateCache } from "./utils/tmdb.ts";
+import { generateHTML, sendEmail } from "./utils/emails.ts";
 await checkArguments();
 
 // Load config file
@@ -38,6 +39,16 @@ const report: Report = {
 	missing: await findMissing(db), // Find missing episodes
 };
 
-db.destroy(); // Disconnect from database
-
+// Log report
 console.log(report);
+
+// Write out html
+if (report.missing.length > 0) {
+	const html = generateHTML(report.missing);
+	await sendEmail(config.email, html);
+	console.log("Email sent to: " + config.email.email);
+} else {
+	console.log("No missing episodes found");
+}
+
+db.destroy(); // Disconnect from database

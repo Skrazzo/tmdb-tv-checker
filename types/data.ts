@@ -3,6 +3,15 @@ export interface Config {
 	show_folder: string;
 	database: string;
 	update_freq: number;
+	email: {
+		resend_key: string;
+		subject: string;
+		email: string;
+	};
+}
+
+export interface LoadConfig extends Omit<Config, "update_freq"> {
+	update_freq: string;
 }
 
 interface ShowChanges {
@@ -19,6 +28,7 @@ export interface Report {
 
 export interface MissingShow {
 	name: string;
+	poster: string;
 	episodes: MissingEpisode[];
 }
 
