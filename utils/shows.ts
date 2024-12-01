@@ -46,29 +46,29 @@ export function getSeason(name: string): number | null {
 }
 
 export function getEpisode(name: string): number | null {
-	let episode: number;
-	let matches: string[] | null;
-	if (name.toLowerCase().includes("ep") && name.toLowerCase().includes("se")) {
-		matches = name.match(/(?<=ep)\d{1,2}/gmi);
-	} else {
-		matches = name.match(/(?<=e)\d{1,2}/gmi);
-	}
-
-	if (!matches || matches.length === 0) {
-		// Check if theres weird episode count like 01x01
-		matches = name.match(/\dx\d/gmi);
-		if (!matches || matches.length === 0) {
-			return null;
-		}
-	}
-
-	try {
-		episode = parseInt(matches[0]);
-	} catch (_err) {
-		return null;
-	}
-
-	return episode;
+    let episode: number;
+    let matches: string[] | null;
+   
+    // Match patterns like EP01, EP02, etc.
+    matches = name.match(/(?<=EP)\d{1,2}/i);
+   
+    if (!matches || matches.length === 0) {
+        // Match patterns like E01, E02, etc.
+        matches = name.match(/(?<=E)\d{1,2}/i);
+    }
+    if (!matches || matches.length === 0) {
+        // Match patterns like 01x01
+        matches = name.match(/\dx\d{1,2}/i);
+    }
+    if (!matches || matches.length === 0) {
+        return null;
+    }
+    try {
+        episode = parseInt(matches[0]);
+    } catch (_err) {
+        return null;
+    }
+    return episode;
 }
 
 export function scanShows(showRoot: Path): ShowScan[] {
