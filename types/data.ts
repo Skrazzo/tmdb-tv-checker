@@ -4,6 +4,7 @@ export interface Config {
 	database: string;
 	update_freq: number;
 	email: {
+		send_email: boolean;
 		resend_key: string;
 		subject: string;
 		email: string;

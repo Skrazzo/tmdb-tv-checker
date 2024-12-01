@@ -19,6 +19,7 @@ function createConfigFile(configPath: Path): void {
 			email: "your@email.com",
 			subject: "Subject for when you receive email",
 			resend_key: "Make account at resend.com and enter api key here",
+			send_email: false
 		},
 	};
 
@@ -50,6 +51,7 @@ export function loadConfig(): Config {
 	checkValue(tmp.email.email, "email.email");
 	checkValue(tmp.email.resend_key, "email.resend_key");
 	checkValue(tmp.email.subject, "email.subject");
+	checkValue(tmp.email.send_email.toString(), 'email.send_email');
 
 	const config: Config = {
 		...tmp,

@@ -2,6 +2,7 @@
 	"tasks": {
 		"dev": "deno run --allow-all main.ts",
 		"compile": "deno compile --allow-all main.ts",
+		"compile-linux": "deno compile --allow-all --target=x86_64-unknown-linux-gnu main.ts",
 		"fmt": "deno fmt --watch --use-tabs --line-width=120 --indent-width=4",
 		"test": "deno test --allow-all"
 	},

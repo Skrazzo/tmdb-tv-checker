@@ -43,7 +43,7 @@ const report: Report = {
 console.log(report);
 
 // Write out html
-if (report.missing.length > 0) {
+if (report.missing.length > 0 && config.email.send_email) {
 	const html = generateHTML(report.missing);
 	await sendEmail(config.email, html);
 	console.log("Email sent to: " + config.email.email);
