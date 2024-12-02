@@ -95,6 +95,9 @@ Deno.test("Episode number extraction", async (t) => {
 		assertEquals(getEpisode("Breaking.Bad.S05E16.Felina.1080p.mkv"), 16);
 		assertEquals(getEpisode("Friends.S02E05.The.One.with.Five.Steaks.mkv"), 5);
 		assertEquals(getEpisode("Game.of.Thrones.S08E03.The.Long.Night.mkv"), 3);
+		assertEquals(getEpisode("The.Walking.Dead.S03E07.720p.mkv"), 7);
+		assertEquals(getEpisode("Scavengers Reign S01E011.mp4"), 11);
+		
 	});
 
 	await t.step("handles atypical formats", () => {

@@ -50,15 +50,15 @@ export function getEpisode(name: string): number | null {
     let matches: string[] | null;
    
     // Match patterns like EP01, EP02, etc.
-    matches = name.match(/(?<=EP)\d{1,2}/i);
+    matches = name.match(/(?<=EP)\d{1,3}/i);
    
     if (!matches || matches.length === 0) {
         // Match patterns like E01, E02, etc.
-        matches = name.match(/(?<=E)\d{1,2}/i);
+        matches = name.match(/(?<=E)\d{1,3}/i);
     }
     if (!matches || matches.length === 0) {
         // Match patterns like 01x01
-        matches = name.match(/\dx\d{1,2}/i);
+        matches = name.match(/\dx\d{1,3}/i);
     }
     if (!matches || matches.length === 0) {
         return null;
