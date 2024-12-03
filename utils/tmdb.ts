@@ -292,3 +292,54 @@ export async function findMissing(db: Kysely<Database>): Promise<Report["missing
 
 	return missing;
 }
+
+
+export async function checkMissingEpisodes(shows: ShowScan[], db: Kysely<Database>): Promise<Report["pathUpdated"]> {
+	const report: Report["pathUpdated"] = {
+		shows: 0,
+		episodes: 0,
+	}
+	
+	for(const show of shows) {
+		const showDB = await db.selectFrom("shows").select('id').where("path", "=", show.path.toString()).executeTakeFirst();
+		if(!showDB) continue;
+
+		let updatedEpisodes: number  = 0; // for tracking how many episodes, and shows were updated
+
+		// Loop through all seasons and compare them with database
+		for(const se of show.seasons) {
+
+			// Loop through all episodes and compare them with database
+			for(const ep of se.episodes) {
+				const epDB = await db.selectFrom('episodes')
+					.select(['id', 'path'])
+					.where('show_id', '=', showDB.id)
+					.where('season', '=', se.season)
+					.where('episode', '=', ep.episode)
+					.executeTakeFirst();
+			
+				if(!epDB) continue;
+
+				// We found an episode that was null before, and now exists on the file system
+				if(epDB.path === null) {
+					// Update database with path
+					await db.updateTable('episodes')
+						.set({path: ep.path.toString()})
+						.where('episodes.id', '=', epDB.id)
+						.execute();
+					updatedEpisodes++;
+				}
+			}
+		}
+
+		// Check if any episodes were updated
+		if(updatedEpisodes > 0) {
+			report.shows++;
+			report.episodes += updatedEpisodes;
+		}
+		
+	}
+
+	return report;
+}
+

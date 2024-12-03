@@ -13,7 +13,7 @@ moment.defaultFormat = momentFormat;
 
 // Check arguments for special commands (db migration, etc..)
 import { checkArguments } from "./utils/arguments.ts";
-import { cleanCache, createCache, findMissing, updateCache } from "./utils/tmdb.ts";
+import { checkMissingEpisodes, cleanCache, createCache, findMissing, updateCache } from "./utils/tmdb.ts";
 import { generateHTML, sendEmail } from "./utils/emails.ts";
 await checkArguments();
 
@@ -36,6 +36,7 @@ const report: Report = {
 	deleted: await cleanCache(db), // Clean up database
 	updated: await updateCache(tmdb, db), // Update database information
 	added: await createCache(shows, tmdb, db), // Create cache for new files
+	pathUpdated: await checkMissingEpisodes(shows, db), // TODO: Check if any null paths exist now
 	missing: await findMissing(db), // Find missing episodes
 };
 
