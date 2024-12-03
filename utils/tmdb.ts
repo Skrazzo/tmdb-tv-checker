@@ -220,6 +220,23 @@ export async function cleanCache(db: Kysely<Database>): Promise<Report["deleted"
 	// Go through all shows and check if paths exist
 	const shows = await db.selectFrom("shows").selectAll().execute();
 	for (const show of shows) {
+		// Check if any of shows episodes went missing
+		const episodes = await db.selectFrom("episodes").selectAll().where("show_id", "=", show.id).execute();
+		if(episodes) { // Got episodes from database
+			for(const ep of episodes) {
+				if(ep.path === null) continue; // Episode is already null
+
+				// Check if path exists
+				const epPath = new Path(ep.path);
+				if(epPath.existsSync()) continue; // Episode path still exists, continue to next episode
+
+				// Episode path is missing, set it to null in database
+				await db.updateTable("episodes").set({path: null}).where("id", "=", ep.id).execute();
+			}
+		}
+		
+		
+		// Check if show folder still exists
 		if (show.path) { // Isn't null and path exists
 			const showPath = new Path(show.path);
 			if (showPath.existsSync()) continue;
