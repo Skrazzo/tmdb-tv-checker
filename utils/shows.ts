@@ -45,30 +45,31 @@ export function getSeason(name: string): number | null {
 	return season;
 }
 
-export function getEpisode(name: string): number | null {
-    let episode: number;
+export function getEpisode(name: string): EpisodeScan['episode'] | null {
+    let episodes: number[];
     let matches: string[] | null;
    
     // Match patterns like EP01, EP02, etc.
-    matches = name.match(/(?<=EP)\d{1,3}/i);
+    matches = name.match(/(?<=EP)\d{1,3}/ig);
    
     if (!matches || matches.length === 0) {
         // Match patterns like E01, E02, etc.
-        matches = name.match(/(?<=E)\d{1,3}/i);
+        matches = name.match(/(?<=E)\d{1,3}/ig);
     }
     if (!matches || matches.length === 0) {
         // Match patterns like 01x01
-        matches = name.match(/\dx\d{1,3}/i);
+        matches = name.match(/\dx\d{1,3}/ig);
     }
     if (!matches || matches.length === 0) {
         return null;
     }
+
     try {
-        episode = parseInt(matches[0]);
+        episodes = matches.map(ep => parseInt(ep));
     } catch (_err) {
         return null;
     }
-    return episode;
+    return episodes;
 }
 
 export function scanShows(showRoot: Path): ShowScan[] {
@@ -126,7 +127,7 @@ export function scanEpisodes(season: SeasonScan): EpisodeScan[] {
 	if (!episodes) return [];
 
 	for (const ep of episodes) {
-		const epNumber: number | null = getEpisode(ep.basename());
+		const epNumber: number[] | null = getEpisode(ep.basename());
 		if (!epNumber) continue;
 
 		rtn.push({
@@ -164,7 +165,7 @@ export function getEpisodePath(
 
 	// get episodes from the season
 	const episodes: EpisodeScan[] = season.episodes;
-	const episode = episodes.filter(episode => episode.episode === ep)[0] || null;
+	const episode = episodes.filter(episode => episode.episode.includes(ep))[0] || null;
 
 	if(!episode) return null;
 	return episode.path;

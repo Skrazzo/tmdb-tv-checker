@@ -311,23 +311,25 @@ export async function checkMissingEpisodes(shows: ShowScan[], db: Kysely<Databas
 
 			// Loop through all episodes and compare them with database
 			for(const ep of se.episodes) {
-				const epDB = await db.selectFrom('episodes')
-					.select(['id', 'path'])
-					.where('show_id', '=', showDB.id)
-					.where('season', '=', se.season)
-					.where('episode', '=', ep.episode)
-					.executeTakeFirst();
-			
-				if(!epDB) continue;
-
-				// We found an episode that was null before, and now exists on the file system
-				if(epDB.path === null) {
-					// Update database with path
-					await db.updateTable('episodes')
-						.set({path: ep.path.toString()})
-						.where('episodes.id', '=', epDB.id)
-						.execute();
-					updatedEpisodes++;
+				for (const epNumber of ep.episode) {
+					const epDB = await db.selectFrom('episodes')
+						.select(['id', 'path'])
+						.where('show_id', '=', showDB.id)
+						.where('season', '=', se.season)
+						.where('episode', '=', epNumber)
+						.executeTakeFirst();
+				
+					if(!epDB) continue;
+	
+					// We found an episode that was null before, and now exists on the file system
+					if(epDB.path === null) {
+						// Update database with path
+						await db.updateTable('episodes')
+							.set({path: ep.path.toString()})
+							.where('episodes.id', '=', epDB.id)
+							.execute();
+						updatedEpisodes++;
+					}
 				}
 			}
 		}

@@ -1,7 +1,7 @@
 import { Path } from "jsr:@david/path";
 
 export interface EpisodeScan {
-	episode: number;
+	episode: number[];
 	path: Path;
 }
 
