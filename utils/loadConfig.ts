@@ -3,7 +3,7 @@ import { Config, LoadConfig, NoConfigValue, NotFoundError } from "../types/index
 import { Path } from "@david/path";
 
 function checkValue(value: string | number | boolean, valueName: string): void {
-	if(typeof value === 'undefined') throw new NoConfigValue(valueName);
+	if (typeof value === "undefined") throw new NoConfigValue(valueName);
 
 	// Convert to string and check if value is empty
 	const tmp: string = value.toString();
@@ -23,7 +23,7 @@ function createConfigFile(configPath: Path): void {
 			email: "your@email.com",
 			subject: "Subject for when you receive email",
 			resend_key: "Make account at resend.com and enter api key here",
-			send_email: false
+			send_email: false,
 		},
 	};
 
@@ -55,7 +55,7 @@ export function loadConfig(): Config {
 	checkValue(tmp.email.email, "email.email");
 	checkValue(tmp.email.resend_key, "email.resend_key");
 	checkValue(tmp.email.subject, "email.subject");
-	checkValue(tmp.email.send_email, 'email.send_email');
+	checkValue(tmp.email.send_email, "email.send_email");
 
 	const config: Config = {
 		...tmp,

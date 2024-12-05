@@ -61,7 +61,7 @@ Deno.test("Episode number extraction", async (t) => {
 		assertEquals(getEpisode("Show.S01E23.1080p.WEB.x264.mkv"), [23]);
 		assertEquals(getEpisode("Series.S05E09.HDR.2160p.WEB.H265.mkv"), [9]);
 		assertEquals(getEpisode("The_EXPANSE_S02_E13_Calibans_War_(720p_AMZN_WebRip).mp4"), [13]);
-		assertEquals(getEpisode('The_EXPANSE_S02_E09_The_Weeping_Somnambulist_(720p_AMZN_WebRip).mp4'), [9]);
+		assertEquals(getEpisode("The_EXPANSE_S02_E09_The_Weeping_Somnambulist_(720p_AMZN_WebRip).mp4"), [9]);
 	});
 
 	await t.step("handles different separators and formats", () => {
@@ -82,7 +82,7 @@ Deno.test("Episode number extraction", async (t) => {
 	await t.step("handles missing or invalid formats", () => {
 		assertEquals(getEpisode("Show.mkv"), null);
 		assertEquals(getEpisode("Show.S01.mkv"), null);
-		assertEquals(getEpisode("Show.E01.mkv"),[ 1]);
+		assertEquals(getEpisode("Show.E01.mkv"), [1]);
 		assertEquals(getEpisode("Show.S01EXX.mkv"), null);
 	});
 
@@ -105,7 +105,6 @@ Deno.test("Episode number extraction", async (t) => {
 		assertEquals(getEpisode("Game.of.Thrones.S08E03.The.Long.Night.mkv"), [3]);
 		assertEquals(getEpisode("The.Walking.Dead.S03E07.720p.mkv"), [7]);
 		assertEquals(getEpisode("Scavengers Reign S01E011.mp4"), [11]);
-		
 	});
 
 	await t.step("handles atypical formats", () => {

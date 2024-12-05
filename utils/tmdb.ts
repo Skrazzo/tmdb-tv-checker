@@ -222,20 +222,19 @@ export async function cleanCache(db: Kysely<Database>): Promise<Report["deleted"
 	for (const show of shows) {
 		// Check if any of shows episodes went missing
 		const episodes = await db.selectFrom("episodes").selectAll().where("show_id", "=", show.id).execute();
-		if(episodes) { // Got episodes from database
-			for(const ep of episodes) {
-				if(ep.path === null) continue; // Episode is already null
+		if (episodes) { // Got episodes from database
+			for (const ep of episodes) {
+				if (ep.path === null) continue; // Episode is already null
 
 				// Check if path exists
 				const epPath = new Path(ep.path);
-				if(epPath.existsSync()) continue; // Episode path still exists, continue to next episode
+				if (epPath.existsSync()) continue; // Episode path still exists, continue to next episode
 
 				// Episode path is missing, set it to null in database
-				await db.updateTable("episodes").set({path: null}).where("id", "=", ep.id).execute();
+				await db.updateTable("episodes").set({ path: null }).where("id", "=", ep.id).execute();
 			}
 		}
-		
-		
+
 		// Check if show folder still exists
 		if (show.path) { // Isn't null and path exists
 			const showPath = new Path(show.path);
@@ -269,12 +268,12 @@ export async function findMissing(db: Kysely<Database>): Promise<Report["missing
 	const shows = await db.selectFrom("shows").selectAll().execute();
 	for (const show of shows) {
 		// Check if show is in ignore database, then skip it
-		const showExists = await db.selectFrom('ignore')
+		const showExists = await db.selectFrom("ignore")
 			.selectAll()
-			.where('show_id', '=', show.id)
+			.where("show_id", "=", show.id)
 			.executeTakeFirst();
-		
-		if(showExists) continue;
+
+		if (showExists) continue;
 
 		// start making report
 		const missingShow: MissingShow = {
@@ -319,40 +318,39 @@ export async function findMissing(db: Kysely<Database>): Promise<Report["missing
 	return missing;
 }
 
-
 export async function checkMissingEpisodes(shows: ShowScan[], db: Kysely<Database>): Promise<Report["pathUpdated"]> {
 	const report: Report["pathUpdated"] = {
 		shows: 0,
 		episodes: 0,
-	}
-	
-	for(const show of shows) {
-		const showDB = await db.selectFrom("shows").select('id').where("path", "=", show.path.toString()).executeTakeFirst();
-		if(!showDB) continue;
+	};
 
-		let updatedEpisodes: number  = 0; // for tracking how many episodes, and shows were updated
+	for (const show of shows) {
+		const showDB = await db.selectFrom("shows").select("id").where("path", "=", show.path.toString())
+			.executeTakeFirst();
+		if (!showDB) continue;
+
+		let updatedEpisodes: number = 0; // for tracking how many episodes, and shows were updated
 
 		// Loop through all seasons and compare them with database
-		for(const se of show.seasons) {
-
+		for (const se of show.seasons) {
 			// Loop through all episodes and compare them with database
-			for(const ep of se.episodes) {
+			for (const ep of se.episodes) {
 				for (const epNumber of ep.episode) {
-					const epDB = await db.selectFrom('episodes')
-						.select(['id', 'path'])
-						.where('show_id', '=', showDB.id)
-						.where('season', '=', se.season)
-						.where('episode', '=', epNumber)
+					const epDB = await db.selectFrom("episodes")
+						.select(["id", "path"])
+						.where("show_id", "=", showDB.id)
+						.where("season", "=", se.season)
+						.where("episode", "=", epNumber)
 						.executeTakeFirst();
-				
-					if(!epDB) continue;
-	
+
+					if (!epDB) continue;
+
 					// We found an episode that was null before, and now exists on the file system
-					if(epDB.path === null) {
+					if (epDB.path === null) {
 						// Update database with path
-						await db.updateTable('episodes')
-							.set({path: ep.path.toString()})
-							.where('episodes.id', '=', epDB.id)
+						await db.updateTable("episodes")
+							.set({ path: ep.path.toString() })
+							.where("episodes.id", "=", epDB.id)
 							.execute();
 						updatedEpisodes++;
 					}
@@ -361,13 +359,11 @@ export async function checkMissingEpisodes(shows: ShowScan[], db: Kysely<Databas
 		}
 
 		// Check if any episodes were updated
-		if(updatedEpisodes > 0) {
+		if (updatedEpisodes > 0) {
 			report.shows++;
 			report.episodes += updatedEpisodes;
 		}
-		
 	}
 
 	return report;
 }
-

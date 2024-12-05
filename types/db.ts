@@ -40,7 +40,6 @@ export type Episode = Selectable<EpisodeTable>;
 export type NewEpisode = Insertable<EpisodeTable>;
 export type UpdateEpisode = Updateable<EpisodeTable>;
 
-
 interface IgnoreTable {
 	id: Generated<number>;
 	show_id: number;

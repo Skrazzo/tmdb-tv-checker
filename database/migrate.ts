@@ -2,9 +2,9 @@ import { ColumnDefinitionBuilder, Kysely } from "npm:kysely";
 import { Database } from "../types/index.ts";
 
 export async function up(db: Kysely<Database>): Promise<void> {
-	const notNull=(col: ColumnDefinitionBuilder): ColumnDefinitionBuilder=>{
+	const notNull = (col: ColumnDefinitionBuilder): ColumnDefinitionBuilder => {
 		return col.notNull();
-	}
+	};
 
 	console.time("shows");
 	await db.schema.createTable("shows")
@@ -38,13 +38,13 @@ export async function up(db: Kysely<Database>): Promise<void> {
 		.execute();
 	console.timeEnd("episodes");
 
-	console.time('ignore');
-	await db.schema.createTable('ignore')
-		.addColumn('id', 'integer', (col) => col.primaryKey())
-		.addColumn('show_id', 'integer', notNull)
-		.addColumn('last_checked', 'text', notNull)
+	console.time("ignore");
+	await db.schema.createTable("ignore")
+		.addColumn("id", "integer", (col) => col.primaryKey())
+		.addColumn("show_id", "integer", notNull)
+		.addColumn("last_checked", "text", notNull)
 		.execute();
-	console.timeEnd('ignore')
+	console.timeEnd("ignore");
 }
 
 export async function down(db: Kysely<Database>): Promise<void> {

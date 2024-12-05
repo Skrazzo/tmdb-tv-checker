@@ -45,31 +45,31 @@ export function getSeason(name: string): number | null {
 	return season;
 }
 
-export function getEpisode(name: string): EpisodeScan['episode'] | null {
-    let episodes: number[];
-    let matches: string[] | null;
-   
-    // Match patterns like EP01, EP02, etc.
-    matches = name.match(/(?<=EP)\d{1,3}/ig);
-   
-    if (!matches || matches.length === 0) {
-        // Match patterns like E01, E02, etc.
-        matches = name.match(/(?<=E)\d{1,3}/ig);
-    }
-    if (!matches || matches.length === 0) {
-        // Match patterns like 01x01
-        matches = name.match(/\dx\d{1,3}/ig);
-    }
-    if (!matches || matches.length === 0) {
-        return null;
-    }
+export function getEpisode(name: string): EpisodeScan["episode"] | null {
+	let episodes: number[];
+	let matches: string[] | null;
 
-    try {
-        episodes = matches.map(ep => parseInt(ep));
-    } catch (_err) {
-        return null;
-    }
-    return episodes;
+	// Match patterns like EP01, EP02, etc.
+	matches = name.match(/(?<=EP)\d{1,3}/ig);
+
+	if (!matches || matches.length === 0) {
+		// Match patterns like E01, E02, etc.
+		matches = name.match(/(?<=E)\d{1,3}/ig);
+	}
+	if (!matches || matches.length === 0) {
+		// Match patterns like 01x01
+		matches = name.match(/\dx\d{1,3}/ig);
+	}
+	if (!matches || matches.length === 0) {
+		return null;
+	}
+
+	try {
+		episodes = matches.map((ep) => parseInt(ep));
+	} catch (_err) {
+		return null;
+	}
+	return episodes;
 }
 
 export function scanShows(showRoot: Path): ShowScan[] {
@@ -159,14 +159,14 @@ export function getEpisodePath(
 	{ se, ep, showFileSystem }: { se: number; ep: number; showFileSystem: ShowScan },
 ): Path | null {
 	const show: ShowScan = showFileSystem;
-	
-	const season: SeasonScan = show.seasons.filter(season => season.season === se)[0] || null
-	if(!season) return null; // couldnt find rigth season
+
+	const season: SeasonScan = show.seasons.filter((season) => season.season === se)[0] || null;
+	if (!season) return null; // couldnt find rigth season
 
 	// get episodes from the season
 	const episodes: EpisodeScan[] = season.episodes;
-	const episode = episodes.filter(episode => episode.episode.includes(ep))[0] || null;
+	const episode = episodes.filter((episode) => episode.episode.includes(ep))[0] || null;
 
-	if(!episode) return null;
+	if (!episode) return null;
 	return episode.path;
 }

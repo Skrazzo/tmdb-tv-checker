@@ -23,7 +23,7 @@ interface ShowChanges {
 export interface Report {
 	deleted: ShowChanges;
 	updated: ShowChanges;
-	pathUpdated: ShowChanges
+	pathUpdated: ShowChanges;
 	added: ShowChanges;
 	missing: MissingShow[];
 }
