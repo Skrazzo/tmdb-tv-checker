@@ -7,6 +7,7 @@
     "jsr:@soapbox/kysely-deno-sqlite@^2.2.0": "2.2.0",
     "jsr:@std/assert@*": "1.0.8",
     "jsr:@std/assert@^1.0.8": "1.0.8",
+    "jsr:@std/cli@*": "1.0.7",
     "jsr:@std/fs@1": "1.0.5",
     "jsr:@std/internal@^1.0.5": "1.0.5",
     "jsr:@std/path@1": "1.0.8",
@@ -42,6 +43,9 @@
       "dependencies": [
         "jsr:@std/internal"
       ]
+    },
+    "@std/cli@1.0.7": {
+      "integrity": "98359df9df586a69015ba570305183b0cb9e7d53c05ea2016ef9a3e77e82c7cd"
     },
     "@std/fs@1.0.5": {
       "integrity": "41806ad6823d0b5f275f9849a2640d87e4ef67c51ee1b8fb02426f55e02fd44e",

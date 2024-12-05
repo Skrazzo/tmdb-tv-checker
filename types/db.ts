@@ -3,6 +3,7 @@ import { Generated, Insertable, Selectable, Updateable } from "npm:kysely";
 export interface Database {
 	shows: ShowTable;
 	episodes: EpisodeTable;
+	ignore: IgnoreTable;
 }
 
 export interface ShowTable {
@@ -38,3 +39,14 @@ export interface EpisodeTable {
 export type Episode = Selectable<EpisodeTable>;
 export type NewEpisode = Insertable<EpisodeTable>;
 export type UpdateEpisode = Updateable<EpisodeTable>;
+
+
+interface IgnoreTable {
+	id: Generated<number>;
+	show_id: number;
+	last_checked: string;
+}
+
+export type Ignore = Selectable<IgnoreTable>;
+export type NewIgnore = Insertable<IgnoreTable>;
+export type UpdateIgnore = Updateable<IgnoreTable>;
