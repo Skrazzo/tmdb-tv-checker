@@ -268,6 +268,15 @@ export async function findMissing(db: Kysely<Database>): Promise<Report["missing
 
 	const shows = await db.selectFrom("shows").selectAll().execute();
 	for (const show of shows) {
+		// Check if show is in ignore database, then skip it
+		const showExists = await db.selectFrom('ignore')
+			.selectAll()
+			.where('show_id', '=', show.id)
+			.executeTakeFirst();
+		
+		if(showExists) continue;
+
+		// start making report
 		const missingShow: MissingShow = {
 			name: show.title,
 			poster: show.poster || "",
