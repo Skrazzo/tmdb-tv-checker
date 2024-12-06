@@ -17,6 +17,12 @@ import { checkMissingEpisodes, cleanCache, createCache, findMissing, updateCache
 import { generateHTML, sendEmail } from "./utils/emails.ts";
 await checkArguments();
 
+// Send email arguments?
+import { parseArgs } from "jsr:@std/cli/parse-args";
+const args = parseArgs(Deno.args, {
+	boolean: ['no-email']
+});
+
 // Load config file
 const config = loadConfig();
 if (!config) Deno.exit(1);
@@ -44,7 +50,7 @@ const report: Report = {
 console.log(report);
 
 // Write out html
-if (report.missing.length > 0 && config.email.send_email) {
+if (report.missing.length > 0 && config.email.send_email && !args["no-email"]) {
 	const html = generateHTML(report.missing);
 	await sendEmail(config.email, html);
 	console.log("Email sent to: " + config.email.email);
