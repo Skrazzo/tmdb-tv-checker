@@ -248,6 +248,9 @@ export async function cleanCache(db: Kysely<Database>): Promise<Report["deleted"
 				deleted.shows += parseInt(results[0].numDeletedRows.toString());
 			}
 
+			// Delete it from ignore list too
+			await db.deleteFrom('ignore').where('show_id', '=', show.id).execute();
+
 			// After deleting show, we need to delete it
 			results = await db.deleteFrom("episodes").where("show_id", "=", show.id).execute();
 			if (results.length > 0) {
