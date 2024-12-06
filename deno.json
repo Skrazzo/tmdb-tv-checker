@@ -7,6 +7,7 @@
 		"test": "deno test --allow-all"
 	},
 	"imports": {
+		"@cliffy/table": "jsr:@cliffy/table@^1.0.0-rc.7",
 		"@david/path": "jsr:@david/path@^0.2.0",
 		"@soapbox/kysely-deno-sqlite": "jsr:@soapbox/kysely-deno-sqlite@^2.2.0",
 		"@std/assert": "jsr:@std/assert@^1.0.8",
