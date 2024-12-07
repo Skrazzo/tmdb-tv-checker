@@ -205,6 +205,44 @@ export async function checkArguments() {
 	} else if (flags.version) {
 		console.log(`Show checker version: ${version}`);
 		Deno.exit();
+	} else if(flags.help) {
+
+		const argumentTable: Table = Table.from([
+			['--migrate', 'Creates database migration'],
+			['--migrate-down', 'Deletes current database'],
+			['--migrate-fresh', 'Deletes and migrates database'],
+			['--version', 'Displays current version'],
+			['--list-shows', 'Displays cached shows in a table format'],
+			['--list-episodes=<show_id>', 'Displays episodes for specified show'],
+			['--ignore=<show_id>', 'Ignores a show, missing episodes do not show up in the report'],
+			['--notice=<show_id>', 'Notices a show, appears in report'],
+			['--help', 'Displays this menu'],
+		]).padding(2);
+
+		const help = `
+		$br
+		Show checker version: ${version}
+		Is an app that scans folder with shows, compares local episodes with tmdb database,
+		and notifies you about missing episodes via E-mail or CLI
+		$br
+		Acceptable arguments:
+		${argumentTable.toString()}
+		`;
+
+		// Filter output
+		const output: string[] = [];
+		for(let line of help.split('\n')) {
+			line = line.trim();
+			line = line.replace(/\$tab/gi, '\t');
+			line = line.replace(/\$br/gi, '\n');
+
+			if(line !== '') {
+				output.push(line);
+			}
+		}
+		
+		console.log(output.join('\n'));
+		Deno.exit();
 	}
 
 	// TODO: Create --help and --version
