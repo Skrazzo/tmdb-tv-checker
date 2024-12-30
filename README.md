@@ -22,5 +22,5 @@ TMDB-show-checker is an executable made with Deno 2.0, that checks your shows, i
 
 ## How to set up
 1. Either download source code and run it with `deno run dev`
-2. Or download compiled version and run it
+2. Or download compiled version from releases
 3. Set up config.json in the root directory
