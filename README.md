@@ -24,20 +24,3 @@ TMDB-show-checker is an executable made with Deno 2.0, that checks your shows, i
 1. Either download source code and run it with `deno run dev`
 2. Or download compiled version and run it
 3. Set up config.json in the root directory
-
-
-## Features TODO
-- [ ] --list-shows // Lists all show names, and if they're ignored
-	- [ ] tmdb_id
-	- [ ] rating
-	- [ ] overview
-	- [ ] release date
-	- [ ] total seasons
-- [ ] --list-episodes // followed by show id
-	- [ ] season and episode
-	- [ ] title
-	- [ ] rating
-	- [ ] overview
-	- [ ] release date
-- [ ] --no-email // execute normally just without sending an email
-- [ ] --help command
