@@ -42,7 +42,7 @@ const report: Report = {
 	deleted: await cleanCache(db), // Clean up database
 	updated: await updateCache(tmdb, db), // Update database information
 	added: await createCache(shows, tmdb, db), // Create cache for new files
-	pathUpdated: await checkMissingEpisodes(shows, db), // TODO: Check if any null paths exist now
+	pathUpdated: await checkMissingEpisodes(shows, db), 
 	missing: await findMissing(db), // Find missing episodes
 };
 

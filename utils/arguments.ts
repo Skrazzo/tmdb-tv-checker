@@ -25,8 +25,6 @@ export async function checkArguments() {
 		string: ["ignore", "notice", 'list-episodes'],
 	});
 
-	// TODO: Add ability to list all shows, and see updates with a command
-
 	if (flags.migrate) {
 		// Do database table migrations
 		try {
@@ -216,6 +214,7 @@ export async function checkArguments() {
 			['--list-episodes=<show_id>', 'Displays episodes for specified show'],
 			['--ignore=<show_id>', 'Ignores a show, missing episodes do not show up in the report'],
 			['--notice=<show_id>', 'Notices a show, appears in report'],
+			['--no-email', 'Won\'t send an email report'],
 			['--help', 'Displays this menu'],
 		]).padding(2);
 
@@ -244,6 +243,4 @@ export async function checkArguments() {
 		console.log(output.join('\n'));
 		Deno.exit();
 	}
-
-	// TODO: Create --help and --version
 }
