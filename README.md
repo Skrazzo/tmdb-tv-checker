@@ -30,7 +30,7 @@ You will need to configure the following:
 
 3. Finally, run `./tmdb --start` to check for any missing episodes!
 
-It is reccomended to run the checker as a cron job, to check for new episodes every n day or week.
+It is reccomended to run the checker as a cron job, to check for new episodes every Nth day or week.
 
 ## Arguments
 
