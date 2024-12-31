@@ -71,11 +71,11 @@ for (const folder of config.show_folders) {
 }
 
 const report: Report = {
-	deleted: await cleanCache(db),
-	updated: await updateCache(tmdb, db),
-	added: await createCache(allShows, tmdb, db),
-	pathUpdated: await checkMissingEpisodes(allShows, db),
-	missing: await findMissing(db),
+	deleted: await cleanCache(db), // Clean up database
+	updated: await updateCache(tmdb, db), // Update database information
+	added: await createCache(shows, tmdb, db), // Create cache for new files
+	pathUpdated: await checkMissingEpisodes(shows, db), 
+	missing: await findMissing(db), // Find missing episodes
 };
 
 console.log(report);
