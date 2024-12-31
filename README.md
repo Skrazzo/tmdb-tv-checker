@@ -28,7 +28,9 @@ You will need to configure the following:
 -   `resend_key` - (optional) The API key for the email service - resend
 -   `email` - (optional) The email address to send notifications to
 
-3. Finally, run `./tmdb` to check for any missing episodes!
+3. Finally, run `./tmdb --start` to check for any missing episodes!
+
+It is reccomended to run the checker as a cron job, to check for new episodes every n day or week.
 
 ## Arguments
 
