@@ -32,6 +32,7 @@ export interface MissingShow {
 	name: string;
 	poster: string;
 	episodes: MissingEpisode[];
+	tmdbLink: string;
 }
 
 export interface MissingEpisode {

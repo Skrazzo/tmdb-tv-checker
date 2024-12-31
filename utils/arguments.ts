@@ -222,17 +222,19 @@ export async function checkArguments() {
 	} else if (flags.version || flags.v) {
 		console.log(`Show checker version: ${version}`);
 		Deno.exit();
-	} else if (flags.help) {
+	} else {
 		const argumentTable: Table = Table.from([
-			["--migrate", "Creates database migration"],
-			["--migrate-down", "Deletes current database"],
-			["--migrate-fresh", "Deletes and migrates database"],
-			["--version", "Displays current version"],
-			["--list-shows", "Displays cached shows in a table format"],
-			["--list-episodes=<show_id>", "Displays episodes for specified show"],
-			["--ignore=<show_id>", "Ignores a show, missing episodes do not show up in the report"],
-			["--notice=<show_id>", "Notices a show, appears in report"],
 			["--help", "Displays this menu"],
+			["--start", "Starts the checker"],
+			["--config", "Creates config file"],
+			["--list", "Displays cached shows in a table format"],
+			["--list <show_id>", "Displays episodes for specified show"],
+			["--ignore <show_id>", "Ignores a show, missing episodes do not show up in the report"],
+			["--notice <show_id>", "Notices a show, appears in report"],
+			["--migrate", "Creates database migration"],
+			["--migrate down", "Deletes current database"],
+			["--migrate fresh", "Deletes and migrates database"],
+			["--version or --v", "Displays current version"],
 		]).padding(2);
 
 		const help = `
@@ -240,9 +242,12 @@ export async function checkArguments() {
 		Show checker version: ${version}
 		Is an app that scans folder with shows, compares local episodes with tmdb database,
 		and notifies you about missing episodes via E-mail or CLI
+
+		GitHub repo: https://github.com/Skrazzo/tmdb-tv-checker
 		$br
 		Acceptable arguments:
 		${argumentTable.toString()}
+		$br
 		`;
 
 		// Filter output
