@@ -1,26 +1,48 @@
-# README
+# tmdb-tv-checker
 
-TMDB-show-checker is an executable made with Deno 2.0, that checks your shows, if any new seasons or episodes have come out for your shows, and notifies you via email 
+tmdb-tv-checker is an executable made with Deno 2.0, that checks your shows, if any new seasons or episodes have come out for your shows, and notifies you via email
 
 ## Features
-- Finds shows based on files in your files system
-- Caches show information from TMDB in an sqlite database
-- Updates cache after certain time has passed (configure it in config file)
-- Self cleans the database cache
-- Notifies you via email (configure it in the config)
-- You can mark shows to ignore, so they dont show up in the report
 
-## Argument list
-- `--migrate` will create cache database
-- `--migrate-fresh` will remigrate the cache database
-- `--migrate-down` will delete the database
-- `--ignore <show_id>` will ignore the show when scanning for missing episodes
-- `--notice <show_id>` will include show in missing report
-- `--list-shows` will list all cached shows
-- `--list-episodes <show_id>` will list all episodes for the specified show
-- `--no-email` will show you report without sending an email to you **(if you have set true in config for email)**
+-   Finds shows based on files in your filesystem
+-   Caches show information from TMDB in an sqlite database
+-   Notifies you via email when new episodes are available
+-   Ignore and include specific shows
+-   Configurable via config file
 
-## How to set up
-1. Either download source code and run it with `deno run dev`
-2. Or download compiled version and run it
-3. Set up config.json in the root directory
+## Installation
+
+1. Download the latest release from the [releases page](https://github.com/Skrazzo/tmdb-tv-checker/releases)
+2. Create the config file with `./tmdb --config` and configure it
+
+You will need to configure the following:
+
+-   `tmdb_key` - The API key for TMDB
+-   `show_folder` - The folder to search for shows
+-   `resend_key` - (optional) The API key for the email service - resend
+-   `email` - (optional) The email address to send notifications to
+
+3. Finally, run `./tmdb` to check for any missing episodes!
+
+## Arguments
+
+| Argument                    | Description                                      |
+| --------------------------- | ------------------------------------------------ |
+| `--help`                    | Shows all available arguments                    |
+| `--config`                  | Creates config file                              |
+| `--migrate`                 | Creates cache database                           |
+| `--migrate-fresh`           | Remigrates cache database                        |
+| `--migrate-down`            | Deletes database                                 |
+| `--ignore <show_id>`        | Excludes show from scan                          |
+| `--notice <show_id>`        | Includes show in report                          |
+| `--list-shows`              | Lists cached shows                               |
+| `--list-episodes <show_id>` | Lists episodes for specified show                |
+| `--no-email`                | Shows report without emailing (if email enabled) |
+
+## Development
+
+This project uses [deno](https://deno.land/) and [typescript](https://www.typescriptlang.org/). Make sure you have both installed.
+
+1. Clone the repository
+2. Initialize the project (both deno and the config file)
+3. Run `deno run dev` to start the project

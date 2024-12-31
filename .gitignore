@@ -1,5 +1,7 @@
 .DS_Store
-database/*.sqlite
 .env
-config.json
 .vscode
+
+# Development files
+config.json
+*.sqlite
