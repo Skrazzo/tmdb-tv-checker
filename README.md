@@ -26,22 +26,23 @@ You will need to configure the following:
 
 ## Arguments
 
-| Argument                    | Description                                      |
-| --------------------------- | ------------------------------------------------ |
-| `--help`                    | Shows all available arguments                    |
-| `--config`                  | Creates config file                              |
-| `--migrate`                 | Creates cache database                           |
-| `--migrate-fresh`           | Remigrates cache database                        |
-| `--migrate-down`            | Deletes database                                 |
-| `--ignore <show_id>`        | Excludes show from scan                          |
-| `--notice <show_id>`        | Includes show in report                          |
-| `--list-shows`              | Lists cached shows                               |
-| `--list-episodes <show_id>` | Lists episodes for specified show                |
-| `--no-email`                | Shows report without emailing (if email enabled) |
+| Argument             | Description                                      |
+| -------------------- | ------------------------------------------------ |
+| `--help`             | Shows all available arguments                    |
+| `--config`           | Creates config file                              |
+| `--start`            | Starts the checker                               |
+| `--list`             | Lists cached shows                               |
+| `--list <show_id>`   | Lists episodes for specified show                |
+| `--ignore <show_id>` | Excludes show from scan                          |
+| `--notice <show_id>` | Includes show in scan                            |
+| `--migrate`          | Creates cache database                           |
+| `--migrate fresh`    | Remigrates cache database                        |
+| `--migrate down`     | Deletes database                                 |
+| `--no-email`         | Shows report without emailing (if email enabled) |
 
 ## Development
 
-This project uses [deno](https://deno.land/) and [typescript](https://www.typescriptlang.org/). Make sure you have both installed.
+This project uses [deno](https://deno.land/). Make sure you have it installed.
 
 1. Clone the repository
 2. Initialize the project (both deno and the config file)

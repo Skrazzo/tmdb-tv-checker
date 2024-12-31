@@ -1,6 +1,6 @@
 export interface Config {
 	tmdb_key: string;
-	show_folder: string;
+	show_folders: string[];
 	database: string;
 	update_freq: number;
 	email: {
