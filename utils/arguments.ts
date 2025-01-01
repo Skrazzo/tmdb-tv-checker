@@ -6,7 +6,7 @@ import { SqliteError } from "https://deno.land/x/sqlite@v3.9.1/mod.ts";
 import { parseArgs } from "jsr:@std/cli/parse-args";
 import moment from "moment";
 import { version } from "../variables/var.ts";
-import { Table, ColumnOptions } from "jsr:@cliffy/table@^1.0.0-rc.7";
+import { ColumnOptions, Table } from "jsr:@cliffy/table@^1.0.0-rc.7";
 
 // Checks for special arguments to execute commands
 export async function checkArguments() {
@@ -46,7 +46,7 @@ export async function checkArguments() {
 			case "fresh":
 				try {
 					const deleteDB: boolean = confirm(
-						"Are you sure you want to delete and recreate your database?"
+						"Are you sure you want to delete and recreate your database?",
 					);
 					if (deleteDB) {
 						await dbPath.remove();

@@ -1,20 +1,22 @@
 # tmdb-tv-checker
 
-A command-line tool that helps you keep track of your TV shows and anime collection. Made with [Deno 2.0](https://deno.land/) for a smooth experience. Perfect for media server owners who want to stay on top of their collection.
+A command-line tool that helps you keep track of your TV shows and anime collection. Made with
+[Deno 2.0](https://deno.land/) for a smooth experience. Perfect for media server owners who want to stay on top of their
+collection.
 
 ## Features
 
 tmdb-tv-checker automatically:
 
--   Scans your media folders
--   Checks for new episodes and seasons using TMDB
--   Finds missing episodes in your collection
--   Sends you email notifications about what's missing
+- Scans your media folders
+- Checks for new episodes and seasons using TMDB
+- Finds missing episodes in your collection
+- Sends you email notifications about what's missing
 
 you can also:
 
--   Ignore and include specific shows
--   Configure via config file
+- Ignore and include specific shows
+- Configure via config file
 
 ## Installation
 
@@ -23,10 +25,10 @@ you can also:
 
 You will need to configure the following:
 
--   `tmdb_key` - The API key for TMDB
--   `show_folders` - Folders to search for shows
--   `resend_key` - (optional) The API key for the email service - resend
--   `email` - (optional) The email address to send notifications to
+- `tmdb_key` - The API key for TMDB
+- `show_folders` - Folders to search for shows
+- `resend_key` - (optional) The API key for the email service - resend
+- `email` - (optional) The email address to send notifications to
 
 3. Finally, run `./tmdb --start` to check for any missing episodes!
 

@@ -55,7 +55,7 @@ export function formatEpisodeDatabase(episode: Episode, show_id: number | bigint
 export async function createCache(
 	shows: ShowScan[],
 	tmdb: TMDB,
-	db: Kysely<Database>
+	db: Kysely<Database>,
 ): Promise<Report["added"]> {
 	const showsAdded: Report["added"] = {
 		shows: 0,
@@ -105,7 +105,8 @@ export async function createCache(
 		if (showRow.insertId === undefined) {
 			throw new NoInsertResult({
 				cause: "Could not retrieve insertId from row insert",
-				message: `Adding show "${newShow.title}" into the database, and could not retrieve insertId, something went wrong`,
+				message:
+					`Adding show "${newShow.title}" into the database, and could not retrieve insertId, something went wrong`,
 			});
 		}
 
@@ -337,7 +338,7 @@ export async function findMissing(db: Kysely<Database>): Promise<Report["missing
 
 export async function checkMissingEpisodes(
 	shows: ShowScan[],
-	db: Kysely<Database>
+	db: Kysely<Database>,
 ): Promise<Report["pathUpdated"]> {
 	const report: Report["pathUpdated"] = {
 		shows: 0,

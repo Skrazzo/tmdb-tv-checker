@@ -3,8 +3,15 @@
 		"dev": "deno run --allow-all main.ts",
 		"compile": "deno compile --allow-all main.ts",
 		"compile-linux": "deno compile --allow-all --target=x86_64-unknown-linux-gnu main.ts",
-		"fmt": "deno fmt --watch --use-tabs --line-width=120 --indent-width=4",
+		"fmt": "deno fmt --watch",
 		"test": "deno test --allow-all"
+	},
+	"fmt": {
+		"useTabs": true,
+		"lineWidth": 120,
+		"semiColons": true,
+		"indentWidth": 4,
+		"singleQuote": false
 	},
 	"imports": {
 		"@cliffy/table": "jsr:@cliffy/table@^1.0.0-rc.7",

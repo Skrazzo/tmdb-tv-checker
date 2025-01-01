@@ -74,12 +74,18 @@ const report: Report = {
 	deleted: await cleanCache(db), // Clean up database
 	updated: await updateCache(tmdb, db), // Update database information
 	added: await createCache(allShows, tmdb, db), // Create cache for new files
-	pathUpdated: await checkMissingEpisodes(allShows, db), 
+	pathUpdated: await checkMissingEpisodes(allShows, db),
 	missing: await findMissing(db), // Find missing episodes
 };
 
 console.log(report);
 
+/*
+	Check if missing shows are more than one
+	And config is set to send out email
+	And if theres no --no-email argument
+	Generate and send report to the specified email
+*/
 if (report.missing.length > 0 && config.email.send_email && !flags["no-email"]) {
 	const html = generateHTML(report.missing);
 	await sendEmail(config.email, html);
@@ -88,4 +94,5 @@ if (report.missing.length > 0 && config.email.send_email && !flags["no-email"]) 
 	console.log("No missing episodes found");
 }
 
+// Disconnect from database
 db.destroy();
