@@ -31,12 +31,14 @@ export const source = `
 					>
 				</div>
 				<div class="show-info" style="flex-grow: 1">
-					<div
+					<a
+						href="{{tmdbLink}}"
+						target="_blank"
 						class="show-title"
 						style="color: #2c3e50; font-size: 18px; font-weight: bold; margin-bottom: 10px; margin-left: 12px"
 					>
 						{{name}}
-					</div>
+					</a>
 					<ul class="episode-list" style="list-style-type: none; padding-left: 0; margin: 0">
 						{{#each episodes}}
 						<li class="episode-item" style="padding: 8px 0; border-bottom: none; padding-bottom: 0">
@@ -52,7 +54,7 @@ export const source = `
 				These episodes are currently missing from your filesystem
 			</p>
 
-			<p>Best regards,<br>Your TV Show Tracker</p>
+			<p>Best regards,<br><a href="https://github.com/Skrazzo/tmdb-tv-checker">Your TV Show Tracker</a></p>
 		</div>
 	</body>
 </html>

@@ -27,7 +27,7 @@ export function formatShowDatabase(details: TvShowDetails): NewShow {
 
 	return {
 		tmdb_id: details.id,
-		status: (statusIdx > -1) ? availableStatuses[statusIdx] : null,
+		status: statusIdx > -1 ? availableStatuses[statusIdx] : null,
 		title: details.name,
 		banner: details.backdrop_path || null,
 		poster: details.poster_path || null,
@@ -52,7 +52,11 @@ export function formatEpisodeDatabase(episode: Episode, show_id: number | bigint
 	};
 }
 
-export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Database>): Promise<Report["added"]> {
+export async function createCache(
+	shows: ShowScan[],
+	tmdb: TMDB,
+	db: Kysely<Database>
+): Promise<Report["added"]> {
 	const showsAdded: Report["added"] = {
 		shows: 0,
 		episodes: 0,
@@ -62,7 +66,8 @@ export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Data
 		// Check if theres aleady cached info in database
 		let showRow;
 		try {
-			showRow = await db.selectFrom("shows")
+			showRow = await db
+				.selectFrom("shows")
 				.selectAll()
 				.where("path", "=", show.path.toString())
 				.executeTakeFirst();
@@ -100,8 +105,7 @@ export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Data
 		if (showRow.insertId === undefined) {
 			throw new NoInsertResult({
 				cause: "Could not retrieve insertId from row insert",
-				message:
-					`Adding show "${newShow.title}" into the database, and could not retrieve insertId, something went wrong`,
+				message: `Adding show "${newShow.title}" into the database, and could not retrieve insertId, something went wrong`,
 			});
 		}
 
@@ -112,7 +116,10 @@ export async function createCache(shows: ShowScan[], tmdb: TMDB, db: Kysely<Data
 
 			// Tries to fetch season, if reaches season that does not exist, breaks the loop, and goes to the next show
 			try {
-				season = await tmdb.tvSeasons.details({ tvShowID: newShow.tmdb_id, seasonNumber: seasonNumber });
+				season = await tmdb.tvSeasons.details({
+					tvShowID: newShow.tmdb_id,
+					seasonNumber: seasonNumber,
+				});
 			} catch (_err) {
 				break;
 			}
@@ -173,20 +180,25 @@ export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<Rep
 			let details: SeasonDetails;
 
 			try {
-				details = await tmdb.tvSeasons.details({ tvShowID: showRow.tmdb_id, seasonNumber: seasonNumber });
+				details = await tmdb.tvSeasons.details({
+					tvShowID: showRow.tmdb_id,
+					seasonNumber: seasonNumber,
+				});
 			} catch (_err) {
 				break;
 			}
 
 			for (const ep of details.episodes) {
 				const epInfo: NewEpisode = formatEpisodeDatabase(ep, showRow.tmdb_id);
-				await db.updateTable("episodes").set({
-					title: epInfo.title,
-					overview: epInfo.overview,
-					release_date: epInfo.release_date,
-					length: epInfo.length,
-					last_checked: moment().format(),
-				})
+				await db
+					.updateTable("episodes")
+					.set({
+						title: epInfo.title,
+						overview: epInfo.overview,
+						release_date: epInfo.release_date,
+						length: epInfo.length,
+						last_checked: moment().format(),
+					})
 					.where("show_id", "=", showRow.id)
 					.where("season", "=", epInfo.season)
 					.where("episode", "=", epInfo.episode)
@@ -198,7 +210,8 @@ export async function updateCache(tmdb: TMDB, db: Kysely<Database>): Promise<Rep
 			seasonNumber++;
 		}
 
-		await db.updateTable("shows")
+		await db
+			.updateTable("shows")
 			.set({ last_checked: moment().format() })
 			.where("id", "=", showRow.id)
 			.execute();
@@ -222,7 +235,8 @@ export async function cleanCache(db: Kysely<Database>): Promise<Report["deleted"
 	for (const show of shows) {
 		// Check if any of shows episodes went missing
 		const episodes = await db.selectFrom("episodes").selectAll().where("show_id", "=", show.id).execute();
-		if (episodes) { // Got episodes from database
+		if (episodes) {
+			// Got episodes from database
 			for (const ep of episodes) {
 				if (ep.path === null) continue; // Episode is already null
 
@@ -236,7 +250,8 @@ export async function cleanCache(db: Kysely<Database>): Promise<Report["deleted"
 		}
 
 		// Check if show folder still exists
-		if (show.path) { // Isn't null and path exists
+		if (show.path) {
+			// Isn't null and path exists
 			const showPath = new Path(show.path);
 			if (showPath.existsSync()) continue;
 		}
@@ -249,7 +264,7 @@ export async function cleanCache(db: Kysely<Database>): Promise<Report["deleted"
 			}
 
 			// Delete it from ignore list too
-			await db.deleteFrom('ignore').where('show_id', '=', show.id).execute();
+			await db.deleteFrom("ignore").where("show_id", "=", show.id).execute();
 
 			// After deleting show, we need to delete it
 			results = await db.deleteFrom("episodes").where("show_id", "=", show.id).execute();
@@ -271,7 +286,8 @@ export async function findMissing(db: Kysely<Database>): Promise<Report["missing
 	const shows = await db.selectFrom("shows").selectAll().execute();
 	for (const show of shows) {
 		// Check if show is in ignore database, then skip it
-		const showExists = await db.selectFrom("ignore")
+		const showExists = await db
+			.selectFrom("ignore")
 			.selectAll()
 			.where("show_id", "=", show.id)
 			.executeTakeFirst();
@@ -282,13 +298,11 @@ export async function findMissing(db: Kysely<Database>): Promise<Report["missing
 		const missingShow: MissingShow = {
 			name: show.title,
 			poster: show.poster || "",
+			tmdbLink: `https://www.themoviedb.org/tv/${show.tmdb_id}`,
 			episodes: [],
 		};
 
-		const episodes = await db.selectFrom("episodes")
-			.selectAll()
-			.where("show_id", "=", show.id)
-			.execute();
+		const episodes = await db.selectFrom("episodes").selectAll().where("show_id", "=", show.id).execute();
 
 		// Loop through every episode
 		for (const ep of episodes) {
@@ -321,14 +335,20 @@ export async function findMissing(db: Kysely<Database>): Promise<Report["missing
 	return missing;
 }
 
-export async function checkMissingEpisodes(shows: ShowScan[], db: Kysely<Database>): Promise<Report["pathUpdated"]> {
+export async function checkMissingEpisodes(
+	shows: ShowScan[],
+	db: Kysely<Database>
+): Promise<Report["pathUpdated"]> {
 	const report: Report["pathUpdated"] = {
 		shows: 0,
 		episodes: 0,
 	};
 
 	for (const show of shows) {
-		const showDB = await db.selectFrom("shows").select("id").where("path", "=", show.path.toString())
+		const showDB = await db
+			.selectFrom("shows")
+			.select("id")
+			.where("path", "=", show.path.toString())
 			.executeTakeFirst();
 		if (!showDB) continue;
 
@@ -339,7 +359,8 @@ export async function checkMissingEpisodes(shows: ShowScan[], db: Kysely<Databas
 			// Loop through all episodes and compare them with database
 			for (const ep of se.episodes) {
 				for (const epNumber of ep.episode) {
-					const epDB = await db.selectFrom("episodes")
+					const epDB = await db
+						.selectFrom("episodes")
 						.select(["id", "path"])
 						.where("show_id", "=", showDB.id)
 						.where("season", "=", se.season)
@@ -351,7 +372,8 @@ export async function checkMissingEpisodes(shows: ShowScan[], db: Kysely<Databas
 					// We found an episode that was null before, and now exists on the file system
 					if (epDB.path === null) {
 						// Update database with path
-						await db.updateTable("episodes")
+						await db
+							.updateTable("episodes")
 							.set({ path: ep.path.toString() })
 							.where("episodes.id", "=", epDB.id)
 							.execute();

@@ -1,6 +1,6 @@
 export interface Config {
 	tmdb_key: string;
-	show_folder: string;
+	show_folders: string[];
 	database: string;
 	update_freq: number;
 	email: {
@@ -32,6 +32,7 @@ export interface MissingShow {
 	name: string;
 	poster: string;
 	episodes: MissingEpisode[];
+	tmdbLink: string;
 }
 
 export interface MissingEpisode {

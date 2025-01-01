@@ -18,4 +18,4 @@ export const videoExtensions: string[] = [
 	".ogv",
 	".divx",
 ];
-export const version = '1.0.2';
+export const version = "2.0.0";

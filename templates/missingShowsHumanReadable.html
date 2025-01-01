@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="utf-8">
+		<meta charset="utf-8" />
 		<style>
 			body {
 				font-family: Arial, sans-serif;
@@ -84,15 +84,17 @@
 			{{#each shows}}
 			<div class="show-card">
 				<div class="poster-container">
-					<img src="https://image.tmdb.org/t/p/original{{poster}}" alt="{{name}} poster" class="poster">
+					<img
+						src="https://image.tmdb.org/t/p/original{{poster}}"
+						alt="{{name}} poster"
+						class="poster"
+					/>
 				</div>
 				<div class="show-info">
-					<div class="show-title">{{name}}</div>
+					<a href="{{tmdbLink}}" target="_blank" class="show-title">{{name}}</a>
 					<ul class="episode-list">
 						{{#each episodes}}
-						<li class="episode-item">
-							Episode {{season}}x{{episode}}: {{name}}
-						</li>
+						<li class="episode-item">Episode {{season}}x{{episode}}: {{name}}</li>
 						{{/each}}
 					</ul>
 				</div>
@@ -101,7 +103,11 @@
 
 			<p class="footer-text">These episodes are currently missing from your filesystem</p>
 
-			<p>Best regards,<br>Your TV Show Tracker</p>
+			<p>
+				Best regards,<br /><a href="https://github.com/Skrazzo/tmdb-tv-checker"
+					>Your TV Show Tracker</a
+				>
+			</p>
 		</div>
 	</body>
 </html>
