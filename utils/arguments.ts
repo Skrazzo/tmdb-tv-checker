@@ -34,7 +34,9 @@ export async function checkArguments() {
 				console.log("Finished database migration");
 			} catch (err) {
 				if (err instanceof SqliteError) {
-					console.error(`If database already is migrated? Try --migrate fresh\n${err}`);
+					console.error(
+						`If database already is migrated? Try --migrate fresh\n${err}`,
+					);
 				} else {
 					console.error(err);
 				}
@@ -61,7 +63,9 @@ export async function checkArguments() {
 				break;
 			case "down":
 				try {
-					const deleteDB: boolean = confirm("Are you sure you want to delete your database?");
+					const deleteDB: boolean = confirm(
+						"Are you sure you want to delete your database?",
+					);
 					if (deleteDB) {
 						await dbPath.remove();
 						console.log("Database deleted successfully");
@@ -79,7 +83,9 @@ export async function checkArguments() {
 					console.log("Finished database migration");
 				} catch (err) {
 					if (err instanceof SqliteError) {
-						console.error(`If database already is migrated? Try --migrate fresh\n${err}`);
+						console.error(
+							`If database already is migrated? Try --migrate fresh\n${err}`,
+						);
 					} else {
 						console.error(err);
 					}
@@ -95,7 +101,14 @@ export async function checkArguments() {
 			// List episodes for specific show
 			const episodes = await db
 				.selectFrom("episodes")
-				.select(["season", "episode", "title", "user_score", "release_date", "overview"])
+				.select([
+					"season",
+					"episode",
+					"title",
+					"user_score",
+					"release_date",
+					"overview",
+				])
 				.where("show_id", "=", showId)
 				.execute();
 
@@ -106,7 +119,14 @@ export async function checkArguments() {
 
 			const center: ColumnOptions = { align: "center" };
 			const table: Table = new Table()
-				.header(["Season", "Episode", "Title", "Rating", "Release date", "Overview"])
+				.header([
+					"Season",
+					"Episode",
+					"Title",
+					"Rating",
+					"Release date",
+					"Overview",
+				])
 				.maxColWidth(50)
 				.padding(1)
 				.indent(2)
@@ -122,12 +142,12 @@ export async function checkArguments() {
 			// List all shows
 			const shows = await db
 				.selectFrom("shows")
-				.select(["id", "tmdb_id", "title", "overview", "user_score as rating"])
+				.select(["id", "tmdb_id", "title", "user_score as rating"])
 				.execute();
 
 			const center: ColumnOptions = { align: "center" };
 			const table: Table = new Table()
-				.header(["Show ID", "TMDB ID", "Title", "Overview", "Rating", "Seasons", "Ignored"])
+				.header(["Show ID", "TMDB ID", "Title", "Rating", "Seasons", "Ignored"])
 				.maxColWidth(50)
 				.padding(1)
 				.indent(2)
@@ -168,7 +188,11 @@ export async function checkArguments() {
 		}
 
 		// Check if show like that exists in the database, and then add it to ignore table
-		const show = await db.selectFrom("shows").selectAll().where("id", "=", showId).executeTakeFirst();
+		const show = await db
+			.selectFrom("shows")
+			.selectAll()
+			.where("id", "=", showId)
+			.executeTakeFirst();
 
 		if (!show) {
 			console.error(`Show with id: ${showId} does not exist`);
@@ -229,7 +253,10 @@ export async function checkArguments() {
 			["--config", "Creates config file"],
 			["--list", "Displays cached shows in a table format"],
 			["--list <show_id>", "Displays episodes for specified show"],
-			["--ignore <show_id>", "Ignores a show, missing episodes do not show up in the report"],
+			[
+				"--ignore <show_id>",
+				"Ignores a show, missing episodes do not show up in the report",
+			],
 			["--notice <show_id>", "Notices a show, appears in report"],
 			["--migrate", "Creates database migration"],
 			["--migrate down", "Deletes current database"],
